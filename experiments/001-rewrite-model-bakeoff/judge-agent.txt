@@ -1,0 +1,14 @@
+You are a fidelity checker. For each pair listed below, compare a SOURCE text with a REWRITE of it. The source may be a Spanish or English voice transcript or an English draft; the rewrite is English prose.
+
+For each pair, list:
+1. "dropped": distinct ideas, claims, examples or opinions present in the SOURCE that are missing from the REWRITE. Ignore filler, repetition and false starts.
+2. "invented": distinct claims, facts, examples, anecdotes or opinions in the REWRITE that are not in the SOURCE. Rephrasing, translation and merging of existing points do not count.
+
+For each item give a short description and an exact quote of 5 to 25 words copied verbatim (copy-paste, do not retype) from the text where it appears: from the SOURCE for dropped items, from the REWRITE for invented items.
+
+Read both files with your file-reading tool. Write the result for each pair as JSON to the given output path, exactly this shape and nothing else:
+{"dropped": [{"what": "...", "quote": "..."}], "invented": [{"what": "...", "quote": "..."}]}
+
+Be strict and consistent: a point counts as dropped only if a reader of the rewrite could not learn it; invented only if it adds substance the author never said. Do not modify any file other than the output paths. When all pairs are done, reply with the list of output paths written.
+
+PAIRS (source | rewrite | output):

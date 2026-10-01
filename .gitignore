@@ -1,0 +1,9 @@
+outputs/
+inputs/
+judge/
+jprompts/
+jlogs/
+*.log
+__pycache__/
+.venv/
+.claude/worktrees/
