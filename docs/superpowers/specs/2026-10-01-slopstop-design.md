@@ -1,6 +1,6 @@
 ---
 date: 2026-10-01
-status: draft, awaiting Alex's review
+status: draft, awaiting review
 ---
 
 # slopstop design
@@ -13,7 +13,7 @@ synthesis.
 
 ## Constraints
 
-These come from Alex and are fixed.
+These are the project's fixed constraints.
 
 1. **Better writing, never hiding.** No feature optimizes against a detector or
    strips provenance. Every published AI-assisted text carries a disclosure.
@@ -23,13 +23,14 @@ These come from Alex and are fixed.
 3. **No watermarked tokens in published prose.** Every Claude model watermarks
    its text, and so do Gemini's consumer apps. They may research, outline,
    critique and fact-check, but the final sentences of published prose come
-   from Alex or from a model that applies no watermark.
-4. **Cloud first.** Rewriting runs on cheap models through OpenRouter, because
-   smaug is not always reachable. The same client also talks to LM Studio on
-   smaug when it is.
+   from the author or from a model that applies no watermark.
+4. **Cloud first.** Rewriting runs on cheap hosted models through any
+   OpenAI-compatible gateway, such as OpenRouter, so it works without a local
+   GPU. The same client talks to a local server (LM Studio, vLLM, Ollama) when
+   one is available.
 5. **The scope decides the process.** Docs and code prose get a quick check and
    automatic cleanup. Published prose gets the full workflow and the
-   disclosure. When the class of a text is unclear, the tool asks Alex.
+   disclosure. When the class of a text is unclear, the tool asks the author.
 
 ## Three classes of text
 
@@ -38,11 +39,11 @@ workflow, the watermark rule and the disclosure.
 
 | class | examples | how it is written | watermark rule | disclosure |
 |---|---|---|---|---|
-| authored | blog posts, books, papers, talks under Alex's name | Alex dictates or drafts; models translate, clean up and flag | applies | required: ideas, structure, claims and voice are Alex's |
-| generated | SOTA reviews, literature surveys published as AI-made | a model writes, Alex reviews | applies | required: AI-generated, reviewed by Alex |
+| authored | blog posts, books, papers, talks under the author's name | the author dictates or drafts; models translate, clean up and flag | applies | required: ideas, structure, claims and voice are the author's |
+| generated | SOTA reviews, literature surveys published as AI-made | a model writes, the author reviews | applies | required: AI-generated, reviewed by the author |
 | docs | READMEs, manuals, code comments, commit messages | anyone | does not apply | none |
 
-The classification is an explicit step in the skill. The skill proposes a class with a one-line reason and asks Alex whenever the text
+The classification is an explicit step in the skill. The skill proposes a class with a one-line reason and asks the author whenever the text
 could be published, a talk, a paper or a post, or whenever the path gives no
 clear signal. The decision goes into the text's provenance record, so the
 disclosure can later state it.
@@ -77,15 +78,17 @@ many. The first catalog:
   repeated sentence openers, the uniformity checks in `tbhb/vale-ai-tells`;
 - triplets, summary closers at the end of a paragraph, and signposting
   openers;
-- over-represented words and phrases, from a profile built by `bin/slopcheck`'s
-  method, which this slice ports into the package.
+- over-represented words and phrases, from a profile built with the
+  `slopcheck` method used in the research (model text against human text on
+  the same topics), which this slice ports into the package.
 
 **Content critic.** A cheap model reads the text and quotes the passages that
 make a claim without support: a generic statement standing in for a specific
 fact, importance asserted with no evidence, a vague upbeat conclusion, one
 point restated in several ways, an unsupported superlative. It quotes and never
 scores. Every quote is matched against the text before it reaches the report,
-and the September critic test found zero invented quotes across six documents.
+and an earlier critic test found zero invented quotes across six documents
+(`docs/research/2026-09-13-style-prompt-arms-experiment.md`).
 This layer exists because the readers who catch AI text point at content as
 often as at wording, and no counter can see content.
 
@@ -96,7 +99,7 @@ after it separates that register's human examples from model text at a
 measured rate. Until then the report leaves it out. Pangram's API is a paid
 option for the same probe.
 
-**Registers.** A register is a folder of human-written texts: Alex's blog,
+**Registers.** A register is a folder of human-written texts: an author's own blog,
 formal academic papers, a personal essay collection, by any author.
 `slopstop profile <folder> --name <register>` counts the rates and writes
 `registers/<name>.json`. The file holds counts, never the texts, so a profile
@@ -112,13 +115,14 @@ One command, four modes, each matching a workflow. Every mode records what it
 did in the provenance record and refuses a watermarking model as the author of
 final text in the authored and generated classes.
 
-- **`dictation`**, authored class. Input is a voice transcript in Spanish or
-  English. A model turns it into English prose, keeping Alex's order, examples
-  and opinions, removing disfluencies, and writing the post where he describes
-  it. Then `judge` lists any dropped or invented claims for Alex to settle.
-- **`polish`**, authored class. Input is Alex's own draft. The model proposes
+- **`dictation`**, authored class. Input is a voice transcript in any
+  language, often the author's first language rather than the target one. A
+  model turns it into prose in the target language, keeping the author's
+  order, examples and opinions, removing disfluencies, and writing the piece
+  itself wherever the author describes what it should say. Then `judge` lists any dropped or invented claims for the author to settle.
+- **`polish`**, authored class. Input is the author's own draft. The model proposes
   edits as a diff, and a mechanical budget caps the share of tokens it may
-  change. Alex accepts each hunk. A prompt saying "grammar only" cannot do this
+  change. The author accepts each hunk. A prompt saying "grammar only" cannot do this
   job, because models given that instruction still raised adjective use by 40%
   to 87% and changed meaning.
 - **`restyle`**, generated class. Input is a draft from any model, Claude
@@ -131,7 +135,7 @@ final text in the authored and generated classes.
 
 Models are chosen per mode in `slopstop.toml`. A model registry records each
 model's watermark status with its source and date, because that status changes,
-as Anthropic's rollout to older Claude models showed this month. Defaults come
+as Anthropic's rollout of its watermark to older Claude models showed in 2026. Defaults come
 from experiment 001.
 
 ### 3. `slopstop judge`
@@ -143,16 +147,16 @@ Translation, rephrasing and merging do not count as changes.
 ### 4. Provenance and `slopstop disclose`
 
 Every text the tools touch gets a sidecar, `<file>.provenance.jsonl`, one line
-per step: who acted (Alex, or a model id), the operation, hashes of input and
+per step: who acted (the author, or a model id), the operation, hashes of input and
 output, the class, and a timestamp. `disclose` renders the clause from that
 record using a template per class. It refuses when an authored or generated
-text's final version came out of a watermarking model after Alex's last edit,
+text's final version came out of a watermarking model after the author's last edit,
 because the clause would then be describing the wrong text.
 
-Draft templates, for Alex to rewrite in his own words:
+Draft templates, which each author should rewrite in their own words:
 
 > **Authored.** I wrote this with AI assistance. I dictated the draft in
-> Spanish; {model} translated it and cleaned it up, and I edited and reviewed
+> {language}; {model} translated it and cleaned it up, and I edited and reviewed
 > the result. The ideas, structure, claims and voice are mine.
 
 > **Generated.** This review was generated with AI. {model} drafted it from
@@ -163,13 +167,13 @@ Draft templates, for Alex to rewrite in his own words:
 
 One Claude Code skill, `slopstop`, carries the workflows. It covers classifying
 the text, routing to the right `rewrite` mode, running `detect`, and emitting
-the disclosure. A short clause in the workspace CLAUDE.md does what a skill
+the disclosure. A short clause in the agent instructions (CLAUDE.md or AGENTS.md) does what a skill
 cannot. It tells every session that Claude never writes the final sentences of
 authored or generated prose, and that any text that might be published goes
 through the classification step.
 
-Dictation arrives through the transcription that already exists, Telegram voice
-notes and the `transcribing-audio` skill, so slopstop takes a transcript and
+Dictation arrives through whatever speech-to-text tool the author already uses,
+so slopstop takes a transcript and
 does not record audio.
 
 ### 6. Experiments
@@ -178,9 +182,10 @@ Every workflow is an experiment until the numbers say otherwise. An experiment
 holds the topic set fixed and measures each arm with the same instruments:
 detector report, judge, sentence statistics, cost, and a blind read.
 `slopstop blind` builds an anonymized side-by-side packet and records which
-version Alex picks. In September two blind reads both chose the passage
-closest to Alex's measured profile over the cleanest one. That result has n=2,
-and the blind read is the instrument every earlier experiment lacked.
+version the author picks. In the earlier experiments, two blind reads by the
+author both chose the passage closest to their own measured profile over the
+cleanest one. That result has n=2, and the blind read is the instrument every
+earlier experiment lacked.
 
 ## Package shape
 
@@ -204,31 +209,35 @@ Configuration is one `slopstop.toml`. Register profiles live in `registers/`.
 
 ## Slices
 
-Each slice ends with something Alex can run on a real text.
+Each slice ends with something a writer can run on a real text.
 
 1. **Detector, mechanical layer.** Port `slopcheck`, add the tell catalog with
    spans, `profile` for registers, and Markdown and JSON reports. Ship two
-   registers: Alex's blog and a public pre-2022 essay collection. Done when
-   `slopstop detect post.md` flags spans on a Claude draft, flags few on Alex's
-   held-out posts, and that false-positive rate is recorded.
+   registers: one author's published blog and a public pre-2022 essay
+   collection. Done when `slopstop detect post.md` flags spans on a model
+   draft, flags few on held-out human posts from the same register, and that
+   false-positive rate is recorded.
 2. **Rewrite, judge and disclose for docs and generated text.** `clean` and
    `restyle` on the models experiment 001 picks, provenance, and `disclose`.
 3. **The authored workflow.** `dictation` and `polish` with the diff budget,
-   the skill, and the CLAUDE.md clause.
+   the skill, and the agent-instructions clause.
 4. **Content critic and classifier probe**, with the calibration gate.
-5. **Experiment 002.** Dictation against Claude draft plus restyle against
-   Alex's draft plus polish, on the same topics, with blind reads.
-6. **Spanish.** A Spanish register and the Spanish tells, found by profiling
-   rather than by translating English lists.
+5. **Experiment 002.** Dictation, against a frontier-model draft plus
+   restyle, against an author's draft plus polish, on the same topics, with
+   blind reads.
+6. **Languages beyond English.** A register and a tell catalog per language,
+   found by profiling human and model text in that language rather than by
+   translating English lists. Spanish comes first.
 
 ## Non-goals
 
 - Lowering detector scores, or any feature whose purpose is to make AI text
   pass as human.
 - Fine-tuning on one author's writing.
-- A general prose linter. rift already is one, and slopstop can feed it rules.
-- Publishing private texts. Alex's voice notes and drafts stay local, and only
-  counts derived from them may be committed.
+- A general prose linter. Vale, proselint and rift already exist, and slopstop
+  can feed them rules.
+- Publishing private texts. Authors' voice notes and drafts stay local, and
+  only counts derived from them may be committed.
 
 ## Open questions
 
@@ -237,5 +246,5 @@ Each slice ends with something Alex can run on a real text.
 - Whether the content critic should run on a cheap model or on Claude. Its
   quotes are never published, so the watermark rule does not bind it, but a
   model judging prose may prefer its own style.
-- How much of the authored workflow Alex wants in the terminal versus in an
+- How much of the authored workflow belongs in the terminal versus in an
   editor, which decides how `polish` shows hunks for acceptance.
