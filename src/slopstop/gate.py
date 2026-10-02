@@ -89,6 +89,35 @@ def _structure(src: str, out: str, r: Result) -> None:
             r.failures.append(f"placeholder {p} appears {out.count(p)} times, expected once")
 
 
+SPAN_RATIO = (0.5, 1.5)
+
+
+def _span_failures(src: str, out: str, allowed: set[int]) -> list[str]:
+    """Only the listed source lines may change; blank lines are free.
+
+    Each changed region must keep half to one and a half times the words of the
+    lines it replaces, and no new non-blank line may appear, so a span fix cannot
+    blank a paragraph or invent one next to an allowed line.
+    """
+    a, b = src.splitlines(), out.splitlines()
+    names = ",".join(map(str, sorted(allowed))) or "none"
+    for op, i1, i2, j1, j2 in difflib.SequenceMatcher(a=a, b=b, autojunk=False).get_opcodes():
+        if op == "equal":
+            continue
+        old = [i for i in range(i1, i2) if a[i].strip()]
+        new = [ln for ln in b[j1:j2] if ln.strip()]
+        outside = [i + 1 for i in old if i + 1 not in allowed]
+        if outside:
+            return [f"--allow span: line {outside[0]} changed but only lines {names} may"]
+        if not old and new:
+            return [f"--allow span: new text inserted near line {i1 + 1}: '{new[0][:60]}'"]
+        ow, nw = sum(len(_all_tokens(a[i])) for i in old), sum(len(_all_tokens(ln)) for ln in new)
+        if ow and not SPAN_RATIO[0] <= nw / ow <= SPAN_RATIO[1]:
+            return [f"--allow span: lines {old[0] + 1}-{old[-1] + 1} went from {ow} to {nw} words; "
+                    f"a span fix keeps {SPAN_RATIO[0]:.0%} to {SPAN_RATIO[1]:.0%} of them"]
+    return []
+
+
 def check_output(src: str, out: str, allow: str = "rewrite", ratio: tuple[float, float] = (0.75, 1.35),
                  lines: list[int] | None = None, budget: float = 0.15,
                  split: list[dict] | None = None) -> Result:
@@ -110,17 +139,7 @@ def check_output(src: str, out: str, allow: str = "rewrite", ratio: tuple[float,
     elif allow == "punctuation" and _all_tokens(src) != _all_tokens(out):
         r.failures.append("--allow punctuation: words changed; only punctuation may change")
     elif allow == "span":
-        allowed = set(lines or [])
-        a, b = src.splitlines(), out.splitlines()
-        for op, i1, i2, _, _ in difflib.SequenceMatcher(a=a, b=b, autojunk=False).get_opcodes():
-            if op == "equal":
-                continue
-            touched = set(range(i1 + 1, i2 + 1)) or {i1, i1 + 1}
-            outside = sorted(touched - allowed)
-            if outside and not (op == "insert" and touched & allowed):
-                r.failures.append(f"--allow span: line {outside[0]} changed but only lines "
-                                  f"{','.join(map(str, sorted(allowed))) or 'none'} may")
-                break
+        r.failures += _span_failures(src, out, set(lines or []))
     elif allow == "polish":
         changed = 1 - difflib.SequenceMatcher(a=_all_tokens(src), b=_all_tokens(out), autojunk=False).ratio()
         if changed > budget:

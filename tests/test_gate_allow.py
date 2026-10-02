@@ -48,3 +48,26 @@ def test_polish_counts_digit_changes():
     src = "In 1999 the price was 100 dollars and in 2024 it was 300 dollars.\n"
     out = "In 2001 the price was 900 dollars and in 2030 it was 700 dollars.\n"
     assert not gate.check_output(src, out, "polish", budget=0.15).ok
+
+
+DOC = ("First paragraph says one thing about the town and its people.\n\n"
+       "Second paragraph has three claims: the river rose, the bridge fell, the mayor left.\n\n"
+       "Third paragraph ends it.\n")
+
+
+def test_span_rejects_blanking_an_allowed_line():
+    out = DOC.replace("Second paragraph has three claims: the river rose, the bridge fell, the mayor left.", "")
+    assert not gate.check_output(DOC, out, "span", lines=[3]).ok
+
+
+def test_span_rejects_an_invented_paragraph_next_to_an_allowed_line():
+    out = DOC.replace("the mayor left.\n", "the mayor left.\n\nIn 1450 Gutenberg invented the printing press for indulgences.\n")
+    assert not gate.check_output(DOC, out, "span", lines=[3]).ok
+
+
+def test_span_accepts_rewording_and_cutting_a_closing_sentence():
+    reworded = DOC.replace("Second paragraph has three claims:", "The second paragraph makes three claims:")
+    assert gate.check_output(DOC, reworded, "span", lines=[3]).ok
+    doc = "We built the bridge over the river last spring with the whole town. In short, it works.\n\nNext.\n"
+    cut = doc.replace(" In short, it works.", "")
+    assert gate.check_output(doc, cut, "span", lines=[1]).ok
