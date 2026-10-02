@@ -42,6 +42,33 @@ def cmd_detect(args) -> int:
     return 1 if any(f["severity"] == "required" for f in rep["findings"]) else 0
 
 
+def cmd_gate(args) -> int:
+    from slopstop import gate
+    src = read(args.source)
+    split = None
+    if args.split:
+        try:
+            split = json.loads(read(args.split))["segments"]
+        except (json.JSONDecodeError, KeyError, TypeError) as e:
+            raise UsageError(f"{args.split} is not a split file with a 'segments' list: {e}") from e
+    if args.output is None:
+        r = gate.check_split(src, split) if split is not None else gate.check_input(src, args.transcript)
+    else:
+        lo, _, hi = args.ratio.partition(":")
+        try:
+            ratio = (float(lo), float(hi))
+            lines = [int(x) for x in args.lines.split(",")] if args.lines else None
+        except ValueError as e:
+            raise UsageError(f"bad --ratio or --lines: {e}") from e
+        r = gate.check_output(src, read(args.output), args.allow, ratio, lines, args.budget, split)
+    for w in r.warnings:
+        print(f"warning: {w}")
+    print("PASS" if r.ok else "FAIL")
+    for f in r.failures:
+        print(f"  {f}")
+    return 0 if r.ok else 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="slopstop", description="Mechanical AI-slop detection with instructions for the agent that fixes it.")
     p.add_argument("--version", action="version", version=f"slopstop {__version__}")
@@ -60,6 +87,17 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--register", required=True)
     s.add_argument("--json", action="store_true")
     s.set_defaults(func=cmd_detect)
+
+    s = sub.add_parser("gate", help="check a model's output against its source, or an input alone")
+    s.add_argument("source")
+    s.add_argument("output", nargs="?")
+    s.add_argument("--allow", default="rewrite", choices=["rewrite", "breaks", "punctuation", "span", "polish"])
+    s.add_argument("--ratio", default="0.75:1.35", help="length band for --allow rewrite, LO:HI")
+    s.add_argument("--lines", help="for --allow span: comma-separated source lines that may change")
+    s.add_argument("--budget", type=float, default=0.15, help="for --allow polish: share of words that may change")
+    s.add_argument("--split", help="split JSON from 'instruct split'")
+    s.add_argument("--transcript", action="store_true", help="input is a transcript: truncation only warns")
+    s.set_defaults(func=cmd_gate)
     return p
 
 
