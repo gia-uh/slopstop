@@ -53,8 +53,8 @@ disclosure can later state it.
 ```
             ┌──────────── provenance record (.provenance.jsonl) ───────────┐
             │                                                              │
- text ──► classify ──► workflow ──► rewrite ──► judge ──► detect ──► disclose ──► final text
-                         │           (models)  (fidelity)  (tells)      (clause)
+ text ──► classify ──► workflow ──► rewrite ──► gate ──► judge ──► detect ──► disclose ──► final text
+                         │           (models)  (structure) (fidelity) (tells)    (clause)
                          └── dictation, author draft, AI draft, docs
 ```
 
@@ -116,10 +116,35 @@ did in the provenance record and refuses a watermarking model as the author of
 final text in the authored and generated classes.
 
 - **`dictation`**, authored class. Input is a voice transcript in any
-  language, often the author's first language rather than the target one. A
-  model turns it into prose in the target language, keeping the author's
-  order, examples and opinions, removing disfluencies, and writing the piece
-  itself wherever the author describes what it should say. Then `judge` lists any dropped or invented claims for the author to settle.
+  language, often the author's first language rather than the target one.
+  It runs in two steps, because a transcript mixes the text with things the
+  author says about the text.
+
+  1. **Split.** A model, Claude included, labels every passage of the
+     transcript as one of three kinds. *Content* is the text itself.
+     *Directives* steer its surface and stay anchored where they were
+     spoken: "the next part is a short paragraph", "make this a list of
+     todos", "the title is...", "keep it short", "keep the swearing".
+     *Agent requests* ask someone to do work: "add examples from the
+     literature", "first transcribe this and then let's discuss". The split
+     writes no published sentence, so the watermark rule does not bind it.
+     Its output is saved next to the provenance record, where the author
+     can read what was set aside.
+  2. **Rewrite.** A non-watermarking model rewrites the content in the
+     target language and the author's voice. It may fix grammar, remove
+     disfluencies and correct names that speech-to-text misheard ("Charge
+     EPT" is ChatGPT), and it applies the directives. Where the author
+     describes what the piece should argue, it states the argument directly.
+     It never sees the agent requests, so it adds no claim, example or
+     section the author did not dictate.
+
+  Then `judge` compares the result against the content alone and lists any
+  dropped or invented claims for the author to settle. Experiment 001 is why
+  the split comes first. Given the whole transcript in one pass, one model
+  kept the author's framing as prose, one cut a framing paragraph and lost
+  the claims inside it, and one printed "First transcribe this..." as part of
+  the post. The judge, given the same transcript, counted every instruction
+  as a dropped claim.
 - **`polish`**, authored class. Input is the author's own draft. The model proposes
   edits as a diff, and a mechanical budget caps the share of tokens it may
   change. The author accepts each hunk. A prompt saying "grammar only" cannot do this
@@ -133,10 +158,25 @@ final text in the authored and generated classes.
 - **`clean`**, docs class. `detect` flags spans and a cheap model fixes them in
   place. Changes within the budget apply without asking.
 
+Every mode hands its output to a structural gate before the judge sees it.
+The gate is deterministic and compares the output with the input. Fences
+must balance, no paragraph block may repeat, the length ratio must sit inside
+the band measured for the mode, no meta-text may leak in ("Here is the
+rewritten essay"), and every placeholder must come back. A failure gets one
+retry and then stops the run with the reason. The same gate runs on inputs, so
+a truncated source is reported before any model reads it. Code blocks never
+reach a model: `rewrite` swaps each one for a placeholder and restores it
+afterwards. In experiment 001 the gate would have caught every failure that no
+metric and no judge saw: an empty output, a post printed twice, an unclosed
+code fence, and two source essays cut off mid-sentence. These checks are not
+tells, because no human writes a post twice at a measurable rate, so they live
+here and not in `detect`.
+
 Models are chosen per mode in `slopstop.toml`. A model registry records each
 model's watermark status with its source and date, because that status changes,
 as Anthropic's rollout of its watermark to older Claude models showed in 2026. Defaults come
-from experiment 001.
+from experiment 001, which picked `deepseek/deepseek-v4-pro` for both
+dictation and restyle, with `qwen/qwen3.7-flash` as the fallback.
 
 ### 3. `slopstop judge`
 
@@ -218,9 +258,10 @@ Each slice ends with something a writer can run on a real text.
    draft, flags few on held-out human posts from the same register, and that
    false-positive rate is recorded.
 2. **Rewrite, judge and disclose for docs and generated text.** `clean` and
-   `restyle` on the models experiment 001 picks, provenance, and `disclose`.
-3. **The authored workflow.** `dictation` and `polish` with the diff budget,
-   the skill, and the agent-instructions clause.
+   `restyle` on the models experiment 001 picks, the structural gate,
+   provenance, and `disclose`.
+3. **The authored workflow.** `dictation` with its split, `polish` with the
+   diff budget, the skill, and the agent-instructions clause.
 4. **Content critic and classifier probe**, with the calibration gate.
 5. **Experiment 002.** Dictation, against a frontier-model draft plus
    restyle, against an author's draft plus polish, on the same topics, with
