@@ -129,8 +129,7 @@ Alex's posts, 36 model essays and three reference texts, it inverted:
 The second-ranked open model, `GeorgeDrayson/modernbert-ai-detection-raid-mage`,
 fails the same way. Both catch the 2023 register of AI slop and score 2026
 frontier essays as more human than pre-LLM human essays. On this register they
-are worse than useless, which is why the design admits a classifier only after
-it separates a register's human texts from model text at a measured rate.
+are worse than useless, which is why slopstop ships no classifier.
 
 ### Blind read: dictation
 
@@ -156,9 +155,9 @@ Alex was first undecided between the top two because the voice note mixed
 instructions for the model with the content of the post, and he was unsure
 those should count against a model. They affect only deepseek's first
 paragraph, while qwen's two failures have nothing to do with them, so the order holds either
-way. The question itself belongs to the design: whether a dictation mode
-should pull spoken instructions out into a separate brief before rewriting,
-so they never reach the prose.
+way. The design answers it by splitting a transcript into content,
+directives and requests before any rewrite, so spoken instructions never
+reach the prose.
 
 ### Blind read: essay rewrite
 
@@ -185,7 +184,7 @@ it in the reading packet.
   words, for both tasks. It ranked first on dictation and tied first on the
   essay rewrite. It invented nothing on either task, wrote no correctives on
   dictation and fixed the transcription errors. One default keeps the
-  rewrite command simple, and the cost gap to the cheapest model is under a
+  skills simple, and the cost gap to the cheapest model is under a
   tenth of a cent per post.
 - **Fallback: `qwen/qwen3.7-flash`**, at $0.0002. It tied on essays, where it
   cut correctives from 3.82 to 0.31 per 1000 words with nothing dropped or
