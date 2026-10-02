@@ -106,6 +106,12 @@ def cmd_check_quotes(args) -> int:
     return 0
 
 
+def cmd_instruct(args) -> int:
+    from slopstop import instruct
+    print(instruct.render(args.task, args.files, args.split, args.budget), end="")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="slopstop", description="Mechanical AI-slop detection with instructions for the agent that fixes it.")
     p.add_argument("--version", action="version", version=f"slopstop {__version__}")
@@ -152,6 +158,13 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--output")
     s.add_argument("--text")
     s.set_defaults(func=cmd_check_quotes)
+
+    s = sub.add_parser("instruct", help="print a task for the agent, built for these files")
+    s.add_argument("task", choices=["split", "dictation", "restyle", "judge", "critic", "polish"])
+    s.add_argument("files", nargs="+")
+    s.add_argument("--split")
+    s.add_argument("--budget", type=float, default=0.15)
+    s.set_defaults(func=cmd_instruct)
     return p
 
 
