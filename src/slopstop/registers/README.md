@@ -29,8 +29,9 @@ Known limits of this register:
 - **bold** is not measurable. The HTML conversion dropped all bold, so every
   post scores 0 and `detect` skips the tell with a note.
 - **headings** counts each post's `# Title`. A text with no title heading,
-  such as a fresh dictation, falls below the band and gets a required finding
-  that says to add a heading only where a reader needs one.
+  such as a fresh dictation, falls below the band. Below the band is optional
+  for every tell except sentence length and spread, so this only produces an
+  optional finding.
 - **long-paragraph** is judged per paragraph against the 99th percentile, and a
   post has about 45 paragraphs, so a human post often has one paragraph above
   the line. It accounts for half of the false positives.

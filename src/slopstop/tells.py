@@ -36,6 +36,7 @@ class Tell:
     low: str | None
     measure: Callable[[str, list[str]], list[Measure]] = field(repr=False)
     describe: str = ""
+    low_required: bool = False  # True only where falling below the band is itself a tell
 
 
 def _long_paragraph(raw: str, phrases: list[str]) -> list[Measure]:
@@ -164,6 +165,8 @@ def _overused(raw, phrases):
     return _list_measure(phrases)(raw, phrases)
 
 
+# Uniform, choppy rhythm is a tell; too few em dashes, colons or headings is not.
+LOW_IS_SLOP = {"sentence-length", "sentence-spread"}
 NOTHING = "Below the register's $lo to $hi. Nothing to fix."
 
 for name, allow, fn, what, high, low in [
@@ -207,4 +210,5 @@ for name, allow, fn, what, high, low in [
      "Reword the overused phrases on lines $lines ($value per 1000 words; register $lo to $hi).",
      NOTHING),
 ]:
-    _add(Tell(name, "doc", "two", allow, high, low, fn, what))
+    _add(Tell(name, "doc", "two", allow, high, low, fn, what,
+              low_required=name in LOW_IS_SLOP))

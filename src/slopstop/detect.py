@@ -14,7 +14,7 @@ def severity(tell: tells.Tell, value: float, band: dict) -> str | None:
             return "required"
         return "optional" if value > band["p90"] else None
     (rlo, rhi), (olo, ohi) = TWO
-    if value > band[rhi] or value < band[rlo]:
+    if value > band[rhi] or (value < band[rlo] and tell.low_required):
         return "required"
     if value > band[ohi] or value < band[olo]:
         return "optional"

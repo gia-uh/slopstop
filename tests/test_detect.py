@@ -14,7 +14,7 @@ def tell(sided):
 @pytest.mark.parametrize("sided,value,expected", [
     ("upper", 10.0, "optional"), ("upper", 8.0, None), ("upper", 8.5, "optional"), ("upper", 10.5, "required"),
     ("two", 11.0, "optional"), ("two", 9.5, "optional"), ("two", 11.5, "required"),
-    ("two", 1.5, "optional"), ("two", 0.5, "required"), ("two", 5.0, None),
+    ("two", 1.5, "optional"), ("two", 0.5, "optional"), ("two", 5.0, None),
 ])
 def test_severity_bands(sided, value, expected):
     assert detect.severity(tell(sided), value, BAND) == expected
@@ -78,3 +78,11 @@ def test_degenerate_band_is_skipped_with_note(corpus):
     rep = detect.detect(raw, reg, "b.md")
     assert "bold" not in {f["tell"] for f in rep["findings"]}
     assert any("bold" in n and "not measurable" in n for n in rep["notes"])
+
+
+def test_low_side_is_optional_unless_the_tell_says_low_is_slop():
+    em = tells.CATALOG["em-dash"]
+    spread = tells.CATALOG["sentence-spread"]
+    assert detect.severity(em, 0.5, BAND) == "optional"        # below p0.5: fewer em dashes is not slop
+    assert detect.severity(spread, 0.5, BAND) == "required"    # too-uniform sentences is
+    assert detect.severity(em, 11.5, BAND) == "required"
