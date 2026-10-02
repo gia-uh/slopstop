@@ -89,6 +89,9 @@ def check_output(src: str, out: str, allow: str = "rewrite", ratio: tuple[float,
                  split: list[dict] | None = None) -> Result:
     r = Result()
     _structure(src, out, r)
+    for s in split or []:
+        if s["kind"] == "request" and len(text.tokenize(s["text"])) >= 6 and overlap(s["text"], out) >= 0.3:
+            r.failures.append(f"a request reached the output: '{s['text'][:60]}'")
     if r.failures and "empty" in r.failures[0]:
         return r
     if allow == "rewrite":
@@ -120,5 +123,28 @@ def check_output(src: str, out: str, allow: str = "rewrite", ratio: tuple[float,
     return r
 
 
+KINDS = {"content", "directive", "request"}
+
+
+def overlap(span: str, hay: str, n: int = 8) -> float:
+    """Share of the span's n-word windows found verbatim in hay."""
+    s, h = text.tokenize(span), " ".join(text.tokenize(hay))
+    if not s:
+        return 1.0
+    if len(s) < n:
+        return 1.0 if " ".join(s) in h else 0.0
+    wins = [" ".join(s[i:i + n]) for i in range(len(s) - n + 1)]
+    return sum(w in h for w in wins) / len(wins)
+
+
 def check_split(transcript: str, segments: list[dict]) -> Result:
-    return Result()
+    r = Result()
+    for i, s in enumerate(segments, 1):
+        if s.get("kind") not in KINDS:
+            r.failures.append(f"passage {i} has kind {s.get('kind')!r}; expected one of {sorted(KINDS)}")
+        if overlap(s.get("text", ""), transcript, n=5) < 0.9:
+            r.failures.append(f"passage {i} is not verbatim: '{s.get('text', '')[:60]}'")
+    cov = overlap(transcript, " ".join(s.get("text", "") for s in segments), n=5)
+    if cov < 0.98:
+        r.failures.append(f"coverage {cov:.0%}: passages must cover the whole transcript in order")
+    return r
