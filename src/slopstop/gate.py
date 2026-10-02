@@ -30,6 +30,11 @@ def _words(s: str) -> list[str]:
     return text.tokenize(text.drop_code(s))
 
 
+def _all_tokens(s: str) -> list[str]:
+    """Every word and number, code included, lowercased: what a fix must not change."""
+    return re.findall(r"\w+", text.normalize(s).lower())
+
+
 def ends_mid_sentence(s: str) -> bool:
     s = s.rstrip()
     if not s:
@@ -102,7 +107,7 @@ def check_output(src: str, out: str, allow: str = "rewrite", ratio: tuple[float,
             r.failures.append(f"length ratio {got:.2f} outside [{lo}, {hi}]")
     elif allow == "breaks" and src.split() != out.split():
         r.failures.append("--allow breaks: words or punctuation changed; only paragraph breaks may change")
-    elif allow == "punctuation" and _words(src) != _words(out):
+    elif allow == "punctuation" and _all_tokens(src) != _all_tokens(out):
         r.failures.append("--allow punctuation: words changed; only punctuation may change")
     elif allow == "span":
         allowed = set(lines or [])
@@ -117,7 +122,7 @@ def check_output(src: str, out: str, allow: str = "rewrite", ratio: tuple[float,
                                   f"{','.join(map(str, sorted(allowed))) or 'none'} may")
                 break
     elif allow == "polish":
-        changed = 1 - difflib.SequenceMatcher(a=_words(src), b=_words(out), autojunk=False).ratio()
+        changed = 1 - difflib.SequenceMatcher(a=_all_tokens(src), b=_all_tokens(out), autojunk=False).ratio()
         if changed > budget:
             r.failures.append(f"--allow polish: {changed:.0%} of words changed, over the {budget:.0%} budget")
     return r
@@ -138,13 +143,28 @@ def overlap(span: str, hay: str, n: int = 8) -> float:
 
 
 def check_split(transcript: str, segments: list[dict]) -> Result:
+    """Each passage must continue the transcript exactly where the previous one ended.
+
+    One cursor over the transcript's words checks verbatim copying, full coverage
+    and order at once; punctuation and case may differ, words may not.
+    """
     r = Result()
+    words = _all_tokens(transcript)
+    cursor = 0
     for i, s in enumerate(segments, 1):
         if s.get("kind") not in KINDS:
             r.failures.append(f"passage {i} has kind {s.get('kind')!r}; expected one of {sorted(KINDS)}")
-        if overlap(s.get("text", ""), transcript, n=5) < 0.9:
-            r.failures.append(f"passage {i} is not verbatim: '{s.get('text', '')[:60]}'")
-    cov = overlap(transcript, " ".join(s.get("text", "") for s in segments), n=5)
-    if cov < 0.98:
-        r.failures.append(f"coverage {cov:.0%}: passages must cover the whole transcript in order")
+        p = _all_tokens(str(s.get("text", "")))
+        if not p:
+            r.failures.append(f"passage {i} is empty")
+            continue
+        if words[cursor:cursor + len(p)] != p:
+            got = " ".join(words[cursor:cursor + 8])
+            r.failures.append(f"passage {i} does not continue the transcript verbatim (text edited, "
+                              f"missing or out of order): expected '{got}...', got '{' '.join(p[:8])}...'")
+            return r
+        cursor += len(p)
+    if cursor < len(words):
+        r.failures.append(f"coverage: the passages stop at word {cursor} of {len(words)}; "
+                          f"missing '{' '.join(words[cursor:cursor + 8])}...'")
     return r

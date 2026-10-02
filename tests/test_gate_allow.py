@@ -34,3 +34,17 @@ def test_polish_budget():
     assert gate.check_output(SRC, small, "polish", budget=0.15).ok
     big = "Totally new words replace everything here now.\nSecond line stays.\nThird line too.\n"
     assert any("budget" in f for f in gate.check_output(SRC, big, "polish", budget=0.15).failures)
+
+
+def test_punctuation_sees_digits_and_code():
+    src = "We used it for 60 years, and it cost $1,000.\n\n```\nsafe = True\n```\n"
+    assert not gate.check_output(src, src.replace("60", "6"), "punctuation").ok
+    assert not gate.check_output(src, src.replace("1,000", "10"), "punctuation").ok
+    assert not gate.check_output(src, src.replace("safe = True", "safe = False"), "punctuation").ok
+    assert gate.check_output(src, src.replace("years, and", "years. And"), "punctuation").ok
+
+
+def test_polish_counts_digit_changes():
+    src = "In 1999 the price was 100 dollars and in 2024 it was 300 dollars.\n"
+    out = "In 2001 the price was 900 dollars and in 2030 it was 700 dollars.\n"
+    assert not gate.check_output(src, out, "polish", budget=0.15).ok
