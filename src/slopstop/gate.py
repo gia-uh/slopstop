@@ -97,6 +97,26 @@ def check_output(src: str, out: str, allow: str = "rewrite", ratio: tuple[float,
         lo, hi = ratio
         if not lo <= got <= hi:
             r.failures.append(f"length ratio {got:.2f} outside [{lo}, {hi}]")
+    elif allow == "breaks" and src.split() != out.split():
+        r.failures.append("--allow breaks: words or punctuation changed; only paragraph breaks may change")
+    elif allow == "punctuation" and _words(src) != _words(out):
+        r.failures.append("--allow punctuation: words changed; only punctuation may change")
+    elif allow == "span":
+        allowed = set(lines or [])
+        a, b = src.splitlines(), out.splitlines()
+        for op, i1, i2, _, _ in difflib.SequenceMatcher(a=a, b=b, autojunk=False).get_opcodes():
+            if op == "equal":
+                continue
+            touched = set(range(i1 + 1, i2 + 1)) or {i1, i1 + 1}
+            outside = sorted(touched - allowed)
+            if outside and not (op == "insert" and touched & allowed):
+                r.failures.append(f"--allow span: line {outside[0]} changed but only lines "
+                                  f"{','.join(map(str, sorted(allowed))) or 'none'} may")
+                break
+    elif allow == "polish":
+        changed = 1 - difflib.SequenceMatcher(a=_words(src), b=_words(out), autojunk=False).ratio()
+        if changed > budget:
+            r.failures.append(f"--allow polish: {changed:.0%} of words changed, over the {budget:.0%} budget")
     return r
 
 
