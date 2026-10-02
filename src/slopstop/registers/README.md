@@ -20,9 +20,13 @@ model sets were not used to build the phrase list):
 | texts | n | with a required finding | by tell |
 |---|---|---|---|
 | author, held out | 29 | 6 | long-paragraph 3, corrective 2, sentence-length 1 |
-| Claude Opus, no style prompt | 12 | 12 | headings 12, overused-phrases 12, sentence-spread 1 |
-| Claude Sonnet, no style prompt | 12 | 12 | headings 11, overused-phrases 12, long-paragraph 1, sentence-spread 1 |
-| Qwen, from an outline | 12 | 12 | headings 12, long-paragraph 9, sentence-spread 9, overused-phrases 6, metaphor-nouns 6, sentence-length 6, repeated-openers 1 |
+| Claude Opus, no style prompt | 12 | 12 | overused-phrases 12, headings 12, sentence-spread 1 |
+| Claude Sonnet, no style prompt | 12 | 12 | overused-phrases 12, headings 11, sentence-spread 1, long-paragraph 1 |
+| Qwen, from an outline | 12 | 12 | long-paragraph 9, sentence-spread 9, overused-phrases 6, metaphor-nouns 4, sentence-length 4 |
+
+On all 147 posts, 38 get a required finding. Hard-wrapping them at 72 columns
+gives 43; the difference comes from the wrapping script folding headings and
+list items into prose, not from the line breaks themselves.
 
 Known limits of this register:
 
