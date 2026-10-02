@@ -65,30 +65,46 @@ failure stops the workflow and goes to the author.
 
 ### Polish (authored)
 
-1. `slopstop instruct polish post.md`: send it to the rewriting model, run the
-   check.
+1. `cp post.md post.orig.md`, then `slopstop instruct polish post.md`: send
+   it to the rewriting model, write its answer to `post.md`, run the check.
 2. Show the author `git diff --no-index --word-diff post.orig.md post.md` hunk
    by hunk and keep only the hunks they accept.
 
 ### Clean (docs)
 
-Detect and fix, applying every required fix without asking.
+Use a register built from docs of the same kind (`slopstop profile <folder of
+READMEs or manuals> --name <name>`). A blog register judges a README by a
+blog's headings and rhythm, so without a docs register run only `slopstop gate`
+on whatever you changed. With one, detect and fix, applying every required fix
+without asking.
 
 ## 4. Detect and fix
+
+Fix one finding at a time; line numbers move after every fix.
 
 1. `slopstop detect post.md --register <register>`. Exit 1 means required
    findings remain. Read the notes at the top: they say which tells were
    skipped and why.
-2. `cp post.md post.orig.md`, then carry out every required instruction. Fixes
-   that change words in authored or generated text go to the rewriting model.
-   You may make `breaks` and `punctuation` fixes yourself, because the gate
-   proves no word changed.
-3. Run each finding's check. If it fails, undo that fix and retry once.
-4. Optional findings: in the docs class apply them; otherwise list them for
+2. `cp post.md post.orig.md`. Take the first required finding and carry out
+   its instruction. Fixes that change words in authored or generated text go
+   to the rewriting model. You may make `breaks` and `punctuation` fixes
+   yourself, because the gate proves no word changed.
+3. Run that finding's check. If it fails, `cp post.orig.md post.md` and retry
+   once with the failure added to the task; a second failure goes to the
+   author.
+4. If the fix changed words, run the judge again
+   (`slopstop instruct judge post.orig.md post.md`, then `slopstop
+   check-quotes` as printed). A dropped or invented claim fails the fix like a
+   failed check, even when the gate passed: the gate cannot read meaning.
+5. Back to step 1: run `detect` again before the next fix, so every check
+   names the current lines.
+6. Optional findings: in the docs class apply them; otherwise list them for
    the author in one line each and apply the ones they pick.
-5. Repeat from step 1 until no required finding is left or after three rounds,
-   and tell the author which.
-6. `slopstop instruct critic post.md` for a last read: do it yourself, run the
+7. Stop when no required finding is left or after three rounds through all
+   findings, and tell the author which. Required findings that sit in text
+   the author dictated or wrote are their voice; list them for the author
+   rather than rewriting them.
+8. `slopstop instruct critic post.md` for a last read: do it yourself, run the
    check, and show the author the verified quotes. Never fix critic items
    without the author.
 
