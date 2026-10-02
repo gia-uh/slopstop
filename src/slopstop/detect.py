@@ -6,6 +6,7 @@ from string import Template
 from slopstop import tells, text
 
 TWO = (("p0.5", "p99.5"), ("p5", "p95"))
+WHOLE_TEXT_RATIO = "0.85:1.15"
 
 
 def severity(tell: tells.Tell, value: float, band: dict) -> str | None:
@@ -39,8 +40,12 @@ def _finding(t: tells.Tell, m: tells.Measure, sev: str, band: dict, file: str) -
         value=round(m.value, 2), where=m.where or "the text", lines=lines or "throughout",
         lo=band[lo_key], hi=band[hi_key], **{k.replace(".", "_"): v for k, v in band.items()})
     check = f"slopstop gate {orig_path(file)} {file} --allow {t.allow}"
-    if t.allow == "span" and lines:
+    if t.allow == "span" and lines and high:
         check += f" --lines {lines}"
+    elif t.allow == "span":
+        # A whole-text finding (no spans, or the low side, whose spans point elsewhere)
+        # cannot be fixed inside listed lines: check it as a light rewrite instead.
+        check = f"slopstop gate {orig_path(file)} {file} --allow rewrite --ratio {WHOLE_TEXT_RATIO}"
     return {
         "tell": t.name, "severity": sev, "value": round(m.value, 2), "where": m.where,
         "band": {k: band[k] for k in band if k != "n"},

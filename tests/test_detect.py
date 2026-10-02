@@ -86,3 +86,17 @@ def test_low_side_is_optional_unless_the_tell_says_low_is_slop():
     assert detect.severity(em, 0.5, BAND) == "optional"        # below p0.5: fewer em dashes is not slop
     assert detect.severity(spread, 0.5, BAND) == "required"    # too-uniform sentences is
     assert detect.severity(em, 11.5, BAND) == "required"
+
+
+def test_whole_text_findings_print_a_check_a_correct_fix_passes(corpus):
+    from slopstop import gate
+    reg = register.build(corpus, "t")
+    uniform = " ".join(["The river runs by the old stone house."] * 40) + "\n"
+    rep = detect.detect(uniform, reg, "u.md")
+    f = [x for x in rep["findings"] if x["tell"] == "sentence-spread"][0]
+    assert f["severity"] == "required"
+    assert f["check"] == "slopstop gate u.orig.md u.md --allow rewrite --ratio 0.85:1.15"
+    sents = uniform.strip().rstrip(".").split(". ")
+    fixed = ". ".join(s if i % 3 else s + " and gulls circle" for i, s in enumerate(sents)) + ".\n"
+    lo, hi = 0.85, 1.15
+    assert gate.check_output(uniform, fixed, "rewrite", ratio=(lo, hi)).ok
