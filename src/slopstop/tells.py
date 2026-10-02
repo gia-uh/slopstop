@@ -96,23 +96,15 @@ def _count_lines(raw: str, pattern: re.Pattern, lines=None) -> Measure:
 
 def _all_lines(raw: str) -> list[tuple[int, str]]:
     """Every line outside frontmatter and code, for tells about headings and bold."""
-    out, in_code = [], False
     m = text.FRONTMATTER.match(raw)
     skip = m.group(0).count("\n") if m else 0
-    for i, ln in enumerate(raw.split("\n")):
-        if i < skip:
-            continue
-        if text.FENCE.match(ln):
-            in_code = not in_code
-            continue
-        if not in_code:
-            out.append((i + 1, ln))
-    return out
+    code = text.drop_code(raw).split("\n")
+    flags = text._scan(raw)[0]
+    return [(i + 1, ln) for i, ln in enumerate(code) if i >= skip and not flags[i]]
 
 
 def _sentences_with_lines(raw: str) -> list[tuple[int, str]]:
-    return [(n, s) for n, ln in text.prose_lines(raw)
-            for s in text.split_sentences(text.strip_markdown(ln)) if text.tokenize(s)]
+    return [(s.line, s.text) for s in text.sentences(raw)]
 
 
 def _pattern(pattern: re.Pattern, all_lines: bool = False):
@@ -152,11 +144,10 @@ def _repeated_openers(raw, phrases):
 
 def _sentence_pattern(pattern: re.Pattern, last_in_paragraph: bool = False):
     def measure(raw, phrases):
-        spans = []
-        for p in text.paragraphs(raw):
-            sents = text.split_sentences(text.strip_markdown(p.text))
-            pick = sents[-1:] if last_in_paragraph else sents
-            spans += [Span(p.line, s[:80]) for s in pick if pattern.match(text.normalize(s))]
+        ss = text.sentences(raw)
+        if last_in_paragraph:
+            ss = [s for i, s in enumerate(ss) if i + 1 == len(ss) or ss[i + 1].par != s.par]
+        spans = [Span(s.line, s.text[:80]) for s in ss if pattern.match(text.normalize(s.text))]
         return [Measure(_rate(raw, len(spans)), tuple(spans))]
     return measure
 

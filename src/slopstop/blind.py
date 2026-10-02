@@ -8,9 +8,8 @@ from slopstop.cli import UsageError
 
 def _closed(body: str) -> str:
     body = body.rstrip() + "\n"
-    if not text.fences_balanced(body):
-        body += "```\n"
-    return body
+    closer = text.open_fence(body)
+    return body + closer + "\n" if closer else body
 
 
 def packet(paths: list[str], seed: int, title: str) -> tuple[str, dict]:

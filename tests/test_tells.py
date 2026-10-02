@@ -81,3 +81,18 @@ def test_every_tell_has_instructions_and_description(name):
     assert t.high and t.describe
     assert (t.low is None) == (t.sided == "upper")
     assert t.allow in {"breaks", "punctuation", "span", "rewrite"}
+
+
+def test_hard_wrapped_text_measures_like_unwrapped():
+    import textwrap
+    flat = ("The town was quiet that winter and nobody went out. We stayed in. "
+            "Here's what we did instead of going out every night of the week. "
+            "In short, we read books by the fire.\n\n") * 6
+    wrapped = "\n\n".join(textwrap.fill(p, 40) for p in flat.split("\n\n") if p.strip()) + "\n"
+    for name in ("sentence-length", "sentence-spread", "repeated-openers", "summary-closers", "signposts"):
+        assert one(name, wrapped).value == one(name, flat).value, name
+
+
+def test_summary_closer_reports_the_sentence_line():
+    raw = "The town was quiet that winter\nand nobody went out.\nIn short, the town was quiet.\n"
+    assert [s.line for s in one("summary-closers", raw).spans] == [3]

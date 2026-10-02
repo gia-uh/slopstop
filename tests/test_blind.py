@@ -45,3 +45,25 @@ def test_cli(versions, tmp_path):
     assert cli.main(["blind", "make", *versions, "--seed", "3", "--out", str(p), "--key", str(k)]) == 0
     assert cli.main(["blind", "record", str(k), "V1>V2>V3"]) == 0
     assert len(json.loads(k.read_text())["ranking"]) == 3
+
+
+@pytest.mark.parametrize("body,closer", [
+    ("Ends inside a tilde fence:\n\n~~~\ncode\n", "~~~"),
+    ("Ends inside a long fence:\n\n````\ncode\n", "````"),
+])
+def test_packet_closes_a_fence_with_its_own_marker(tmp_path, body, closer):
+    a = tmp_path / "a.md"
+    a.write_text(body)
+    b = tmp_path / "b.md"
+    b.write_text("Plain.\n")
+    md, _ = blind.packet([str(a), str(b)], seed=1, title="t")
+    from slopstop import text
+    assert text.fences_balanced(md)
+    assert len(text.paragraphs(md)) >= 2  # the second version's text is prose, not code
+
+
+def test_packet_leaves_a_balanced_tilde_block_alone(tmp_path):
+    a = tmp_path / "a.md"
+    a.write_text("Shows a fence:\n\n~~~\n```\n~~~\n\nEnd of A.\n")
+    md, _ = blind.packet([str(a)], seed=1, title="t")
+    assert md.rstrip().endswith("End of A.")

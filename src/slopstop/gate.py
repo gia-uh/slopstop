@@ -27,7 +27,7 @@ class Result:
 
 
 def _words(s: str) -> list[str]:
-    return text.tokenize(text.FENCED.sub(" ", s))
+    return text.tokenize(text.drop_code(s))
 
 
 def ends_mid_sentence(s: str) -> bool:
