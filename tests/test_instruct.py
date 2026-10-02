@@ -67,3 +67,11 @@ def test_every_task_ends_with_a_check(files):
 def test_cli_wrong_file_count(files):
     t, _, _ = files
     assert cli.main(["instruct", "judge", str(t)]) == 2
+
+
+def test_polish_task_carries_the_text_and_asks_for_it_back(files):
+    t, _, _ = files
+    out = instruct.render("polish", [str(t)])
+    assert "Slop is a human failure." in out
+    assert "cp " not in out and "in place" not in out
+    assert "--allow polish --budget 0.15" in out.strip().splitlines()[-1]
