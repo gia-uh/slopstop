@@ -5,17 +5,21 @@ status: draft, awaiting review
 
 # slopstop design
 
-slopstop has two parts. The tool is a mechanical command-line program that
-encodes the rules for finding AI slop, the human baselines those rules are
-measured against, and the prompts an agent needs to fix what it finds. The
-skills are instructions for an agent (Claude Code, OpenCode, or agents
-orchestrated by aegis) that do the actual work: rewriting, judging, looping
-until the text is clean, and disclosing how the text was made. The skills
-live in this repository so users can copy them, and they call the tool.
+slopstop has two parts. The tool is a mechanical command-line program. It
+encodes the rules for finding AI slop and the human baselines those rules are
+measured against, it checks texts against them, and it tells an agent what to
+fix and how the fix will be checked. The skills are instructions for an agent
+(Claude Code, OpenCode, or agents orchestrated by aegis) that does the actual
+work: reading, rewriting, judging, looping until the text is clean, and
+disclosing how the text was made. The skills live in this repository so users
+can copy them, and they call the tool.
 
-The tool holds no workflow and chooses no model. Its one optional model call
-is a slop critic sent to an OpenAI-compatible endpoint the user configures.
-Everything that needs judgment or discipline belongs to the skills.
+The tool makes no model calls, holds no workflow and chooses no model. Every
+command either measures a text or prints instructions for the agent built for
+that text. The agent drives: it runs a command, reads the findings and
+instructions, does the work itself or hands it to another model, and runs the
+check the instructions name. Everything that needs judgment or discipline
+belongs to the skills.
 
 The evidence behind each decision is in `docs/research/`, starting with the
 synthesis, and in `experiments/`.
@@ -31,8 +35,9 @@ synthesis, and in `experiments/`.
    Gemini's consumer apps watermark their text. They may split, outline,
    critique and check, but the final sentences of published prose come from
    the author or from a model that applies no watermark.
-4. **The tool is mechanical.** Given the same input and configuration, every
-   command except the critic returns the same output. The rules live in
+4. **The tool is mechanical.** It makes no model calls and keeps no state
+   between commands. Given the same input and configuration, every command
+   returns the same output. The rules live in
    code and data files that can be tested, versioned and diffed.
 5. **Every rule carries its measurement.** A tell enters the catalog with the
    human rate it was measured against and the experiment that justified it.
@@ -40,8 +45,14 @@ synthesis, and in `experiments/`.
 ## Part 1: the tool
 
 A uv Python package with a `slopstop` CLI. The core uses only the standard
-library. An optional `[nlp]` extra adds spaCy for tells that need a parser,
-and an optional `[critic]` extra adds the HTTP client for the critic.
+library. An optional `[nlp]` extra adds spaCy for tells that need a parser.
+
+Commands fall into two kinds. Measuring commands (`profile`, `detect`, `gate`,
+`mask`, `unmask`, `check-quotes`, `blind`) compute a result. Instructing
+commands (`detect` again, and `instruct`) print a task for the agent, built
+for the text in hand: what to do, where, the measured reason, the output
+format, and the command that will check the result. The instructions never
+say who must do the work; that is the skill's decision.
 
 ### `slopstop profile <folder> --name <register>`
 
@@ -55,9 +66,30 @@ author's own words.
 
 ### `slopstop detect <file> --register <name>`
 
-Reports the spans a reader would flag, each with the tell, the register's rate
-and the text's rate, as Markdown or JSON. Each tell has a two-sided band, so a
-text with too few em dashes is as visible as one with too many. The first
+Prints the findings and, for each one, the instruction to fix it. A finding
+names the span, the tell, the register's rate and the text's rate. Its
+instruction says what to change there and which `gate --allow` kind will
+check the change. Each finding is marked:
+
+- **required** when the text falls outside the band that holds 99% of the
+  register's human texts (or paragraphs, for tells counted per paragraph);
+- **optional** when it falls outside the 90% band but inside the 99% one.
+
+For example:
+
+```
+required  ¶3  long-paragraph  177 words; register p99 112, median 43
+  Split ¶3 at the points where the argument moves on. Insert paragraph
+  breaks only. Check: slopstop gate post.orig.md post.md --allow breaks
+optional  em-dash  11.2 per 1000 words; register 90% band 0 to 9.5
+  Replace the em dashes at lines 4, 12, 31 with periods or commas.
+  Check: slopstop gate post.orig.md post.md --allow punctuation
+```
+
+The paragraph numbers are measured on the author's 147 posts, and so is the
+em-dash band: 90% of the posts run between 0 and 9.5 per 1000 words, and 99%
+under 13.6. `--json` gives the same content for a script. Each tell has a two-sided band,
+so a text with too few em dashes is as visible as one with too many. The first
 catalog:
 
 - the corrective construction ("it isn't X, it's Y"), ported from
@@ -74,13 +106,9 @@ catalog:
 - over-represented words and phrases, from a profile of model text against
   human text on the same topics, ported from the workspace's `slopcheck`.
 
-`--critic` adds the one model call. A model reads the text and quotes
-passages that make a claim without support: a generic statement standing in
-for a specific fact, importance asserted without evidence, one point restated
-several ways. It quotes and never scores, and every quote is matched against
-the text before it reaches the report. The endpoint, key and model come from
-`slopstop.toml` or the environment, with no default. Readers who catch AI
-text point at content as often as at wording, and no counter can see content.
+Counting cannot see content, and readers who catch AI text point at content
+as often as at wording. That reading is the agent's job, through
+`slopstop instruct critic`, below.
 
 No classifier ships. Experiment 001 found that the two best open detectors on
 the RAID leaderboard score pre-LLM human essays as more AI-like than
@@ -88,14 +116,16 @@ uninstructed Claude essays.
 
 ### `slopstop gate <source> <output> --allow <kind>`
 
-Structural checks of a model's output against its input, for the skill to run
-after every model call. The output fails if code fences are unbalanced, a
+Structural checks of a model's output against its input, for the agent to run
+after every rewrite or fix. The output fails if code fences are unbalanced, a
 30-word run repeats, the length ratio leaves the band for the kind of change,
 the first or last line is addressed to the user ("Here is the rewritten
 essay") and the source does not contain it, a placeholder is missing, or it
 ends mid-sentence when the source did not. `slopstop gate <source>` alone
 checks an input for truncation before any model reads it; on transcripts that
-check only warns, because speech has no final period.
+check only warns, because speech has no final period. `slopstop gate
+<transcript> --split <split.json>` checks that a split's passages are verbatim
+and cover the whole transcript in order.
 
 `--allow` declares what the change may touch, and the gate verifies it:
 
@@ -126,20 +156,29 @@ Verifies the quotes in a judge's or critic's JSON against the texts and marks
 each item verified or not. Unverified items are dropped from what the author
 sees.
 
-### `slopstop prompt <name>`
+### `slopstop instruct <task> <files>`
 
-Prints a shipped prompt. The prompts are files in `prompts/`, versioned with
-the rules they serve, so a skill on any agent uses the same wording:
+Prints the task for the agent, built for these files from templates in
+`instructions/`, versioned with the rules they serve. Each one ends with the
+output format and the check to run next.
 
-- `split`: label each passage of a transcript as content, directive or
-  request, copied verbatim;
-- `dictation`: rewrite content with directives in place, in the author's
-  voice, fixing grammar and misheard names, directives included;
-- `restyle`: rewrite a model's draft keeping every claim;
-- `fix-<tell>`: one per tell, for a local fix of the flagged spans, naming
-  the `--allow` kind it must pass;
-- `judge`: list dropped and invented claims with verbatim quotes;
-- `critic`: the prompt `detect --critic` sends.
+- `split <transcript>`: label each passage as content, directive or request,
+  copied verbatim, and write `<transcript>.split.json`. Check:
+  `slopstop gate <transcript> --split <transcript>.split.json`, which
+  confirms the passages are verbatim and cover the whole transcript.
+- `dictation <split.json>`: rewrite the content with the directives applied
+  where they were spoken, in the author's voice, fixing grammar and misheard
+  names, directives included, and adding nothing. Check: `gate --allow
+  rewrite`.
+- `restyle <file>`: rewrite a model's draft keeping every claim, with code
+  masked. Check: `gate --allow rewrite`.
+- `judge <source> <output> [--set-aside <split.json>]`: list what the output
+  dropped outside the set-aside passages and what it invented, with verbatim
+  quotes. Check: `check-quotes`.
+- `critic <file>`: quote the passages that make a claim without support (a
+  generic statement standing in for a specific fact, importance asserted
+  without evidence, one point restated several ways). Quote, never score.
+  Check: `check-quotes`.
 
 ### `slopstop blind`
 
@@ -175,17 +214,18 @@ the text could be published or the path gives no clear signal.
 A transcript mixes the text with things the author says about the text.
 
 1. `slopstop gate <transcript>` warns if it is cut off.
-2. **Split.** Any agent, Claude included, labels each passage with the
-   `split` prompt. Content is what a reader should read; a directive steers
+2. **Split.** Any agent, Claude included, follows `slopstop instruct
+   split`. Content is what a reader should read; a directive steers
    form where it was spoken ("the title is...", "make this a list", "keep
    the swearing"); a request asks for work ("add examples from the
    literature", "first transcribe this and let's discuss"). The skill shows
    the author what was set aside.
 3. **Rewrite.** A non-watermarking model rewrites the content with the
-   directives in place, using the `dictation` prompt. It never sees the
+   directives in place, following `slopstop instruct dictation`. It never sees the
    requests. `gate --allow rewrite` checks the result.
-4. **Judge.** The `judge` prompt gets the full transcript and the list of
-   set-aside passages, and reports anything dropped outside that list. A
+4. **Judge.** The agent follows `slopstop instruct judge` with the full
+   transcript and the set-aside passages, so anything dropped outside that
+   list is reported. A
    mistake in the split stays visible this way; in the smoke test, the split
    set aside two of the author's open questions as requests.
 5. **Detect and fix**, below.
@@ -197,8 +237,8 @@ split covered all three transcripts verbatim and no request reached the prose.
 
 ### Restyle, polish and clean
 
-- **Restyle**, generated class: `mask`, rewrite with the `restyle` prompt,
-  `gate`, `unmask`, judge, then detect and fix.
+- **Restyle**, generated class: `mask`, `instruct restyle`, `gate`, `unmask`,
+  judge, then detect and fix.
 - **Polish**, authored class: the model proposes edits to the author's draft
   as a diff, a budget caps the share of tokens it may change, and the author
   accepts each hunk. A "grammar only" prompt cannot do this job; models given
@@ -207,13 +247,14 @@ split covered all three transcripts verbatim and no request reached the prose.
 
 ### Detect and fix
 
-`slopstop detect` flags spans; the skill sends each one back with its
-`fix-<tell>` prompt and runs `gate` with the declared `--allow` kind; a
-rejected fix gets one retry. The loop stops when the report is clean or after
-three rounds, and the skill tells the author which. In the smoke test two
-rounds brought every dictation paragraph under the register's 99th
-percentile, and dictation outputs ran at 5 to 15 em dashes per 1000 words
-against the register's 3.68, which this loop exists to fix.
+The agent runs `slopstop detect`, carries out each required instruction,
+and runs the check the instruction names; a rejected fix gets one retry. The
+skill decides which optional findings to take, or asks the author. The loop
+stops when no required finding is left or after three rounds, and the skill
+tells the author which. In the smoke test two rounds brought every dictation
+paragraph under the register's 99th percentile. Two of the three dictation
+outputs also ran at 13.7 and 14.9 em dashes per 1000 words, above the
+register's 99% band, so they would get required em-dash findings.
 
 ### Disclosure and the watermark rule
 
@@ -263,12 +304,15 @@ Each slice ends with something a writer can run on a real text.
    two registers: one author's published blog and a public pre-2022 essay
    collection. Done when `slopstop detect post.md` flags a model draft, flags
    few held-out human posts, and that rate is recorded.
-2. **Gate, mask, check-quotes and the prompts.** Done when the 102 outputs of
-   experiment 001 reproduce the smoke test's 7 flags.
+2. **Gate, mask, check-quotes and the instructions.** Done when the 102
+   outputs of experiment 001 reproduce the smoke test's 7 flags, and every
+   `detect` finding prints an instruction whose check passes on a correct fix
+   and fails on a wrong one.
 3. **The skills.** Dictation, restyle and clean, the fix loop, disclosure, and
    the agent-instructions clause, run end to end on one runner.
 4. **Polish**, with the diff budget.
-5. **The critic**, with its quotes checked.
+5. **The critic**: `instruct critic` and its use in the skills, with the
+   quotes checked.
 6. **Experiment 002.** Dictation, against a frontier draft plus restyle,
    against an author's draft plus polish, on the same topics, with blind
    reads.
@@ -279,7 +323,7 @@ Each slice ends with something a writer can run on a real text.
 
 - Lowering detector scores, or any feature whose purpose is to make AI text
   pass as human.
-- Running workflows or choosing models inside the tool.
+- Calling a model, running a workflow or choosing a model inside the tool.
 - Fine-tuning on one author's writing.
 - A general prose linter. Vale, proselint and rift exist, and a register can
   be exported as rules for them.
@@ -289,7 +333,7 @@ Each slice ends with something a writer can run on a real text.
 ## Open questions
 
 - Which public pre-2022 essay corpus allows redistributing derived counts.
-- Whether the critic should run on a non-Claude model by default in the
-  skills. Its quotes are never published, so the watermark rule does not bind
-  it, but a model judging prose may prefer its own style.
+- Whether the skills should hand the critic's reading to a non-Claude model.
+  Its quotes are never published, so the watermark rule does not bind it, but
+  a model judging prose may prefer its own style.
 - How `polish` shows hunks for acceptance: in the terminal or in an editor.
