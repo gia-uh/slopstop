@@ -112,6 +112,30 @@ def cmd_instruct(args) -> int:
     return 0
 
 
+def cmd_blind_make(args) -> int:
+    from slopstop import blind
+    for f in args.files:
+        read(f)
+    md, key = blind.packet(args.files, args.seed, args.title)
+    Path(args.out).write_text(md)
+    Path(args.key).write_text(json.dumps(key, indent=1) + "\n")
+    print(f"{args.out}\n{args.key}  (keep the key away from the reader)")
+    return 0
+
+
+def cmd_blind_record(args) -> int:
+    from slopstop import blind
+    try:
+        key = json.loads(read(args.key))
+    except json.JSONDecodeError as e:
+        raise UsageError(f"{args.key} is not valid JSON: {e}") from e
+    key = blind.record(key, args.ranking)
+    Path(args.key).write_text(json.dumps(key, indent=1) + "\n")
+    for i, tier in enumerate(key["ranking"], 1):
+        print(f"{i}. {' = '.join(tier)}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="slopstop", description="Mechanical AI-slop detection with instructions for the agent that fixes it.")
     p.add_argument("--version", action="version", version=f"slopstop {__version__}")
@@ -165,6 +189,20 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--split")
     s.add_argument("--budget", type=float, default=0.15)
     s.set_defaults(func=cmd_instruct)
+
+    s = sub.add_parser("blind", help="blind-read packets and rankings")
+    bs = s.add_subparsers(dest="blind_command")
+    m = bs.add_parser("make", help="build an anonymized packet and its key")
+    m.add_argument("files", nargs="+")
+    m.add_argument("--seed", type=int, required=True)
+    m.add_argument("--out", required=True)
+    m.add_argument("--key", required=True)
+    m.add_argument("--title", default="versions")
+    m.set_defaults(func=cmd_blind_make)
+    r = bs.add_parser("record", help="record the reader's ranking in the key")
+    r.add_argument("key")
+    r.add_argument("ranking")
+    r.set_defaults(func=cmd_blind_record)
     return p
 
 
