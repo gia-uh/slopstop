@@ -1,6 +1,6 @@
 # 001: which cheap models rewrite well
 
-Status: complete, 2026-10-01. One run, three texts per cell: enough to rule a
+Status: complete, 2026-10-02. One run, three texts per cell: enough to rule a
 model out, not to rank two close ones.
 
 ## Question
@@ -15,7 +15,11 @@ dropped or invented claims, and a low cost per thousand words.
 
 - **Inputs, six texts.** Three essays written by Claude Opus 5 with no system
   prompt, taken from the September control corpus (AI winter, automating your
-  writing, binary search). Three of Alex's voice notes: one in English, the
+  writing, binary search). Two of them are truncated in the corpus itself:
+  AI winter stops mid-sentence and binary search stops inside an unclosed
+  code block, probably cut by a token limit when they were generated. Every
+  model rewrote the same truncated texts, so comparisons between models
+  hold. Three of Alex's voice notes: one in English, the
   idea for a post on whether AI slop exists, and two in Spanish, on a semantic
   layer for rift and on the sindri project. The voice notes are private and
   are not in this repository.
@@ -156,18 +160,36 @@ way. The question itself belongs to the design: whether a dictation mode
 should pull spoken instructions out into a separate brief before rewriting,
 so they never reach the prose.
 
+### Blind read: essay rewrite
+
+Alex read three rewrites of the binary-search essay and the original, in
+random order with the models hidden, and ranked them
+`deepseek-v4-pro` = `qwen3.7-flash` > `mistral-medium-3.1` > the original.
+
+- **`deepseek/deepseek-v4-pro`** and **`qwen/qwen3.7-flash`** could not be
+  separated by the reader or by the numbers: about 760 words each, no claims
+  invented, 3 and 5 em dashes against the original's 4. The judge's only
+  dropped item for deepseek was the title, and the prompt asked for plain
+  paragraphs.
+- **`mistralai/mistral-medium-3.1`** doubled the em dashes to 8 and dropped
+  the point that the broken variants fail only at the boundaries.
+- **The original**, Claude Opus 5 with no style instructions, came last.
+
+The source ends inside an unclosed code block. Deepseek and Mistral closed
+it; Qwen did not, and its open fence broke the Markdown of everything after
+it in the reading packet.
+
 ## Conclusion
 
-- **Default rewrite model for essays: `qwen/qwen3.7-flash`.** On Claude essays
-  it cut correctives from 3.82 to 0.31 per 1000 words with no claims dropped
-  or invented. It costs $0.0002 per 1000 words. A blind read of essay
-  rewrites is pending.
-- **Default for dictation: `deepseek/deepseek-v4-pro`**, at $0.0009 per 1000
-  words. It ranked first in the blind read, invented nothing on either task,
-  wrote no correctives on dictation and fixed the transcription errors.
-  `qwen/qwen3.7-flash` is second on dictation.
-- **Worth a blind read on rewriting:** `mistralai/mistral-medium-3.1`, which
-  removed every corrective.
+- **Default rewrite model: `deepseek/deepseek-v4-pro`**, at $0.0009 per 1000
+  words, for both tasks. It ranked first on dictation and tied first on the
+  essay rewrite. It invented nothing on either task, wrote no correctives on
+  dictation and fixed the transcription errors. One default keeps the
+  rewrite command simple, and the cost gap to the cheapest model is under a
+  tenth of a cent per post.
+- **Fallback: `qwen/qwen3.7-flash`**, at $0.0002. It tied on essays, where it
+  cut correctives from 3.82 to 0.31 per 1000 words with nothing dropped or
+  invented, and came second on dictation.
 - **Ruled out:** `moonshotai/kimi-k2.6` invented 10.7 claims per essay;
   `qwen/qwen3-235b-a22b-2507` cut sentences to 7.8 words and dropped six
   claims per essay; `z-ai/glm-5.3-flash` returned empty or truncated text;
@@ -185,8 +207,7 @@ so they never reach the prose.
   11.5 and 15.3 words against his 17.5.
 
 Each blind read is one text and one reader, so it can overturn a ranking by
-the numbers but not establish one. The essay-rewrite packet is still with
-Alex.
+the numbers but not establish one.
 
 ## Running it
 
