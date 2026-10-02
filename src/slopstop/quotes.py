@@ -12,6 +12,8 @@ def norm(s: str) -> str:
 
 
 def check(data: dict, source: str | None, output: str | None, text: str | None) -> dict:
+    if not isinstance(data, dict):
+        raise UsageError("the quotes file must be a JSON object")
     texts = {"source": source, "output": output, "text": text}
     verified, bad = {}, 0
     for key, target in TARGET.items():
@@ -22,7 +24,10 @@ def check(data: dict, source: str | None, output: str | None, text: str | None) 
             raise UsageError(f"'{key}' quotes are checked against --{target}, which was not given")
         hay = norm(hay)
         kept = []
-        for item in data[key] or []:
+        items = data[key] or []
+        if not isinstance(items, list) or not all(isinstance(i, dict) for i in items):
+            raise UsageError(f"'{key}' must be a list of objects with a 'quote'")
+        for item in items:
             q = norm(str(item.get("quote", "")))
             if q and q in hay:
                 kept.append({**item, "verified": True})

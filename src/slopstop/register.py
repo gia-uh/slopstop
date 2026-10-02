@@ -79,7 +79,10 @@ def load(ref: str) -> dict:
     for c in candidates:
         if c.is_file():
             try:
-                return json.loads(c.read_text())
+                reg = json.loads(c.read_text())
             except json.JSONDecodeError as e:
                 raise UsageError(f"register {c} is not valid JSON: {e}") from e
+            if not isinstance(reg, dict) or not isinstance(reg.get("tells"), dict) or "name" not in reg:
+                raise UsageError(f"{c} is not a register: it needs a 'name' and a 'tells' object")
+            return reg
     raise UsageError(f"no register {ref!r} (looked in ./registers and the package)")

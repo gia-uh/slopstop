@@ -1,5 +1,4 @@
 """Tasks for the agent, built for the files in hand. The tool never runs them."""
-import json
 from importlib import resources
 from pathlib import Path
 from string import Template
@@ -20,10 +19,8 @@ def _read(p: str) -> str:
 def _segments(split: str | None) -> list[dict]:
     if not split:
         raise UsageError("this task needs --split, the JSON written by 'instruct split'")
-    try:
-        return json.loads(_read(split))["segments"]
-    except (json.JSONDecodeError, KeyError, TypeError) as e:
-        raise UsageError(f"{split} is not a split file with a 'segments' list: {e}") from e
+    from slopstop.cli import load_split
+    return load_split(split)
 
 
 def prepared_dictation(segments: list[dict]) -> str:

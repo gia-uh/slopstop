@@ -18,6 +18,19 @@ def read(path: str) -> str:
     return p.read_text(encoding="utf-8", errors="replace")
 
 
+def load_split(path: str) -> list[dict]:
+    """The segments of a split file, validated: a list of {"kind": str, "text": str}."""
+    try:
+        segs = json.loads(read(path))["segments"]
+    except (json.JSONDecodeError, KeyError, TypeError) as e:
+        raise UsageError(f"{path} is not a split file with a 'segments' list: {e}") from e
+    if not isinstance(segs, list) or not all(
+            isinstance(x, dict) and isinstance(x.get("kind"), str) and isinstance(x.get("text"), str)
+            for x in segs):
+        raise UsageError(f"{path}: every segment must be an object with string 'kind' and 'text'")
+    return segs
+
+
 def cmd_profile(args) -> int:
     from slopstop import phrases, register
     folder = Path(args.folder)
@@ -45,12 +58,7 @@ def cmd_detect(args) -> int:
 def cmd_gate(args) -> int:
     from slopstop import gate
     src = read(args.source)
-    split = None
-    if args.split:
-        try:
-            split = json.loads(read(args.split))["segments"]
-        except (json.JSONDecodeError, KeyError, TypeError) as e:
-            raise UsageError(f"{args.split} is not a split file with a 'segments' list: {e}") from e
+    split = load_split(args.split) if args.split else None
     if args.output is None:
         r = gate.check_split(src, split) if split is not None else gate.check_input(src, args.transcript)
     else:
@@ -86,6 +94,8 @@ def cmd_unmask(args) -> int:
         blocks = json.loads(read(args.code))
     except json.JSONDecodeError as e:
         raise UsageError(f"{args.code} is not valid JSON: {e}") from e
+    if not isinstance(blocks, dict) or not all(isinstance(k, str) and isinstance(v, str) for k, v in blocks.items()):
+        raise UsageError(f"{args.code} must map placeholders to code blocks, as 'slopstop mask' writes it")
     out = mask.unmask(read(args.file), blocks)
     if args.o:
         Path(args.o).write_text(out)
