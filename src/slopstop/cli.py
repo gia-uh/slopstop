@@ -69,6 +69,31 @@ def cmd_gate(args) -> int:
     return 0 if r.ok else 1
 
 
+def cmd_mask(args) -> int:
+    from slopstop import mask
+    p = Path(args.file)
+    masked, blocks = mask.mask(read(args.file))
+    mp, cp = p.with_name(f"{p.stem}.masked{p.suffix}"), p.with_name(f"{p.stem}.code.json")
+    mp.write_text(masked)
+    cp.write_text(json.dumps(blocks, indent=1) + "\n")
+    print(f"{mp}\n{cp}  ({len(blocks)} code blocks)")
+    return 0
+
+
+def cmd_unmask(args) -> int:
+    from slopstop import mask
+    try:
+        blocks = json.loads(read(args.code))
+    except json.JSONDecodeError as e:
+        raise UsageError(f"{args.code} is not valid JSON: {e}") from e
+    out = mask.unmask(read(args.file), blocks)
+    if args.o:
+        Path(args.o).write_text(out)
+    else:
+        print(out, end="")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="slopstop", description="Mechanical AI-slop detection with instructions for the agent that fixes it.")
     p.add_argument("--version", action="version", version=f"slopstop {__version__}")
@@ -98,6 +123,16 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--split", help="split JSON from 'instruct split'")
     s.add_argument("--transcript", action="store_true", help="input is a transcript: truncation only warns")
     s.set_defaults(func=cmd_gate)
+
+    s = sub.add_parser("mask", help="swap code blocks for placeholders before a rewrite")
+    s.add_argument("file")
+    s.set_defaults(func=cmd_mask)
+
+    s = sub.add_parser("unmask", help="put code blocks back after a rewrite")
+    s.add_argument("file")
+    s.add_argument("--code", required=True)
+    s.add_argument("-o")
+    s.set_defaults(func=cmd_unmask)
     return p
 
 
