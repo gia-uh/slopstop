@@ -128,17 +128,46 @@ frontier essays as more human than pre-LLM human essays. On this register they
 are worse than useless, which is why the design admits a classifier only after
 it separates a register's human texts from model text at a measured rate.
 
+### Blind read: dictation
+
+Alex read four versions of his English voice note on the term "AI slop", in
+random order with the models hidden, and ranked them
+`deepseek-v4-pro` > `qwen3.7-flash` > `inkling-small` > `command-a-plus`.
+
+- **`deepseek/deepseek-v4-pro`** fixed every transcription error ("Slap" to
+  slop, "cloud" to Claude, "Charge EPT" to ChatGPT, "sentence" to sentience)
+  and kept every claim. Its first paragraph kept the author's framing ("I have
+  this idea for a blog post I want to title...") instead of writing the post.
+- **`qwen/qwen3.7-flash`** wrote the post from the first sentence, but kept all
+  four transcription errors, which the prompt asked it to fix. Removing the
+  framing paragraph also removed the claims inside it: slop passes on a quick
+  glance, and it comes from someone who chose not to put in the effort.
+- **`thinkingmachines/inkling-small`** stayed close to a raw transcript, with
+  the false starts and the errors left in.
+- **`cohere/command-a-plus`** printed the whole post twice and kept the
+  closing instructions to the model ("First transcribe this and then let's
+  discuss...") as prose. None of the table's columns caught the duplication.
+
+Alex was first undecided between the top two because the voice note mixed
+instructions for the model with the content of the post, and he was unsure
+those should count against a model. They affect only deepseek's first
+paragraph, while qwen's two failures have nothing to do with them, so the order holds either
+way. The question itself belongs to the design: whether a dictation mode
+should pull spoken instructions out into a separate brief before rewriting,
+so they never reach the prose.
+
 ## Conclusion
 
-- **Default rewrite model: `qwen/qwen3.7-flash`.** On Claude essays it cut
-  correctives from 3.82 to 0.31 per 1000 words with no claims dropped or
-  invented. On dictation it produced no correctives, the lowest em-dash rate
-  of the fluent models, and invented nothing. It costs $0.0002 per 1000 words.
-- **Second choice: `deepseek/deepseek-v4-pro`**, at $0.0009. It invented
-  nothing on either task and wrote no correctives on dictation.
-- **Worth a blind read:** `cohere/command-a-plus` and
-  `thinkingmachines/inkling-small` on dictation, and
-  `mistralai/mistral-medium-3.1` on rewriting, which removed every corrective.
+- **Default rewrite model for essays: `qwen/qwen3.7-flash`.** On Claude essays
+  it cut correctives from 3.82 to 0.31 per 1000 words with no claims dropped
+  or invented. It costs $0.0002 per 1000 words. A blind read of essay
+  rewrites is pending.
+- **Default for dictation: `deepseek/deepseek-v4-pro`**, at $0.0009 per 1000
+  words. It ranked first in the blind read, invented nothing on either task,
+  wrote no correctives on dictation and fixed the transcription errors.
+  `qwen/qwen3.7-flash` is second on dictation.
+- **Worth a blind read on rewriting:** `mistralai/mistral-medium-3.1`, which
+  removed every corrective.
 - **Ruled out:** `moonshotai/kimi-k2.6` invented 10.7 claims per essay;
   `qwen/qwen3-235b-a22b-2507` cut sentences to 7.8 words and dropped six
   claims per essay; `z-ai/glm-5.3-flash` returned empty or truncated text;
@@ -155,8 +184,9 @@ it separates a register's human texts from model text at a measured rate.
 - **No model reached Alex's sentence length on rewrites.** All stayed between
   11.5 and 15.3 words against his 17.5.
 
-The ranking by numbers is provisional until blind reads confirm it. A packet
-of the top four versions of one dictation and one essay rewrite is with Alex.
+Each blind read is one text and one reader, so it can overturn a ranking by
+the numbers but not establish one. The essay-rewrite packet is still with
+Alex.
 
 ## Running it
 
