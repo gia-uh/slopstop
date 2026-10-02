@@ -50,6 +50,11 @@ conclusion, and anyone can rerun it from the README given the same inputs.
 | `docs/research/` | literature reports and findings, dated, frozen once complete |
 | `docs/superpowers/specs/`, `docs/superpowers/plans/` | design specs and implementation plans |
 | `experiments/NNN-<slug>/` | one experiment per folder: code, method, results |
+| `src/slopstop/` | the CLI: one module per command, `tells.py` holds the catalog |
+| `src/slopstop/registers/` | shipped registers (counts only) and their measured false-positive rates |
+| `src/slopstop/instructions/` | the task templates `slopstop instruct` fills |
+| `skills/` | agent skills and the agent-instructions clause, for users to copy |
+| `tests/` | pytest, one file per module, run by `make test` |
 | `know-how/` | one procedure per job, each opening with a `when:` line |
 | `Makefile` | every mechanical check |
 

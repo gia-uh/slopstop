@@ -7,3 +7,6 @@ jlogs/
 __pycache__/
 .venv/
 .claude/worktrees/
+dist/
+*.egg-info/
+.superpowers/

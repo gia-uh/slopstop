@@ -1,0 +1,1352 @@
+{
+ "name": "apiad-blog-en",
+ "lang": "en",
+ "texts": 118,
+ "holdout": 29,
+ "words": 229234,
+ "tells": {
+  "long-paragraph": {
+   "p0.5": 1.0,
+   "p5": 2.0,
+   "p50": 44.0,
+   "p90": 82.0,
+   "p95": 92.0,
+   "p99": 115.0,
+   "p99.5": 128.76,
+   "n": 5217
+  },
+  "em-dash": {
+   "p0.5": 0.0,
+   "p5": 0.0,
+   "p50": 3.42,
+   "p90": 8.368,
+   "p95": 9.698,
+   "p99": 13.18,
+   "p99.5": 13.573,
+   "n": 117
+  },
+  "mid-sentence-colon": {
+   "p0.5": 0.0,
+   "p5": 0.0,
+   "p50": 1.32,
+   "p90": 3.244,
+   "p95": 5.052,
+   "p99": 8.27,
+   "p99.5": 11.645,
+   "n": 117
+  },
+  "corrective": {
+   "p0.5": 0.0,
+   "p5": 0.0,
+   "p50": 0.46,
+   "p90": 1.638,
+   "p95": 2.942,
+   "p99": 3.782,
+   "p99.5": 3.83,
+   "n": 117
+  },
+  "metaphor-nouns": {
+   "p0.5": 0.0,
+   "p5": 0.0,
+   "p50": 0.0,
+   "p90": 0.922,
+   "p95": 1.494,
+   "p99": 3.298,
+   "p99.5": 4.518,
+   "n": 117
+  },
+  "headings": {
+   "p0.5": 0.163,
+   "p5": 0.24,
+   "p50": 0.54,
+   "p90": 2.794,
+   "p95": 3.212,
+   "p99": 3.795,
+   "p99.5": 3.838,
+   "n": 117
+  },
+  "bold": {
+   "p0.5": 0.0,
+   "p5": 0.0,
+   "p50": 0.0,
+   "p90": 0.0,
+   "p95": 0.0,
+   "p99": 0.0,
+   "p99.5": 0.0,
+   "n": 117
+  },
+  "sentence-length": {
+   "p0.5": 9.924,
+   "p5": 13.658,
+   "p50": 17.79,
+   "p90": 20.782,
+   "p95": 21.832,
+   "p99": 22.789,
+   "p99.5": 23.119,
+   "n": 117
+  },
+  "sentence-spread": {
+   "p0.5": 6.027,
+   "p5": 7.58,
+   "p50": 9.69,
+   "p90": 11.71,
+   "p95": 13.038,
+   "p99": 14.177,
+   "p99.5": 15.152,
+   "n": 117
+  },
+  "repeated-openers": {
+   "p0.5": 0.0,
+   "p5": 0.0,
+   "p50": 3.83,
+   "p90": 8.694,
+   "p95": 13.746,
+   "p99": 19.92,
+   "p99.5": 23.566,
+   "n": 117
+  },
+  "triplets": {
+   "p0.5": 0.0,
+   "p5": 0.56,
+   "p50": 3.25,
+   "p90": 7.988,
+   "p95": 9.89,
+   "p99": 13.774,
+   "p99.5": 13.901,
+   "n": 117
+  },
+  "summary-closers": {
+   "p0.5": 0.0,
+   "p5": 0.0,
+   "p50": 0.0,
+   "p90": 0.484,
+   "p95": 0.62,
+   "p99": 1.731,
+   "p99.5": 2.096,
+   "n": 117
+  },
+  "signposts": {
+   "p0.5": 0.0,
+   "p5": 0.0,
+   "p50": 1.37,
+   "p90": 3.602,
+   "p95": 4.318,
+   "p99": 6.017,
+   "p99.5": 6.217,
+   "n": 117
+  },
+  "overused-phrases": {
+   "p0.5": 0.0,
+   "p5": 0.0,
+   "p50": 1.84,
+   "p90": 5.09,
+   "p95": 6.45,
+   "p99": 7.801,
+   "p99.5": 8.132,
+   "n": 117
+  }
+ },
+ "phrases": [
+  {
+   "gram": "the honest",
+   "ratio": 318.97,
+   "model_pm": 317.97,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "the useful",
+   "ratio": 225.45,
+   "model_pm": 224.45,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "off by",
+   "ratio": 206.75,
+   "model_pm": 205.75,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "a model can",
+   "ratio": 188.04,
+   "model_pm": 187.04,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "genuinely useful",
+   "ratio": 169.34,
+   "model_pm": 168.34,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "of billions of",
+   "ratio": 169.34,
+   "model_pm": 168.34,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "appear to",
+   "ratio": 150.63,
+   "model_pm": 149.63,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "are worth",
+   "ratio": 150.63,
+   "model_pm": 149.63,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "asking whether",
+   "ratio": 150.63,
+   "model_pm": 149.63,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "has shifted",
+   "ratio": 150.63,
+   "model_pm": 149.63,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "the honest answer",
+   "ratio": 150.63,
+   "model_pm": 149.63,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "the interesting",
+   "ratio": 150.63,
+   "model_pm": 149.63,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "energy and",
+   "ratio": 131.93,
+   "model_pm": 130.93,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "exactly one",
+   "ratio": 131.93,
+   "model_pm": 130.93,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "that worked",
+   "ratio": 131.93,
+   "model_pm": 130.93,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "you do not",
+   "ratio": 131.93,
+   "model_pm": 130.93,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "a generated",
+   "ratio": 113.23,
+   "model_pm": 112.23,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "a model trained",
+   "ratio": 113.23,
+   "model_pm": 112.23,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "actually understand",
+   "ratio": 113.23,
+   "model_pm": 112.23,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "and cultural",
+   "ratio": 94.52,
+   "model_pm": 93.52,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "before writing",
+   "ratio": 94.52,
+   "model_pm": 93.52,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "graph you",
+   "ratio": 94.52,
+   "model_pm": 93.52,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "hundreds of billions",
+   "ratio": 94.52,
+   "model_pm": 93.52,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "loop the",
+   "ratio": 94.52,
+   "model_pm": 93.52,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "ten seconds",
+   "ratio": 94.52,
+   "model_pm": 93.52,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "the failure",
+   "ratio": 94.52,
+   "model_pm": 93.52,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "the next time",
+   "ratio": 94.52,
+   "model_pm": 93.52,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "the useful question",
+   "ratio": 94.52,
+   "model_pm": 93.52,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "verification is",
+   "ratio": 94.52,
+   "model_pm": 93.52,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "when a model",
+   "ratio": 94.52,
+   "model_pm": 93.52,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "are looking at",
+   "ratio": 75.82,
+   "model_pm": 74.82,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "built by",
+   "ratio": 75.82,
+   "model_pm": 74.82,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "useful question is",
+   "ratio": 75.82,
+   "model_pm": 74.82,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "a structure",
+   "ratio": 58.43,
+   "model_pm": 261.86,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "a person who",
+   "ratio": 57.11,
+   "model_pm": 56.11,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "actually is",
+   "ratio": 57.11,
+   "model_pm": 56.11,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "and in doing",
+   "ratio": 57.11,
+   "model_pm": 56.11,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "carries no",
+   "ratio": 57.11,
+   "model_pm": 56.11,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "is cheap",
+   "ratio": 57.11,
+   "model_pm": 56.11,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "model produces a",
+   "ratio": 57.11,
+   "model_pm": 56.11,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "set in",
+   "ratio": 57.11,
+   "model_pm": 56.11,
+   "human_pm": 0.0
+  },
+  {
+   "gram": "a plausible",
+   "ratio": 50.12,
+   "model_pm": 224.45,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "a genuine",
+   "ratio": 45.96,
+   "model_pm": 205.75,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "is which",
+   "ratio": 45.96,
+   "model_pm": 205.75,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "failure modes",
+   "ratio": 41.8,
+   "model_pm": 187.04,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "pattern is",
+   "ratio": 39.89,
+   "model_pm": 317.97,
+   "human_pm": 7.0
+  },
+  {
+   "gram": "by hand",
+   "ratio": 37.64,
+   "model_pm": 168.34,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "it describes",
+   "ratio": 37.64,
+   "model_pm": 168.34,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "the range",
+   "ratio": 35.88,
+   "model_pm": 411.49,
+   "human_pm": 10.5
+  },
+  {
+   "gram": "a poor",
+   "ratio": 33.49,
+   "model_pm": 149.63,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "an enormous",
+   "ratio": 33.49,
+   "model_pm": 149.63,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "argument for",
+   "ratio": 33.49,
+   "model_pm": 149.63,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "failure mode",
+   "ratio": 33.49,
+   "model_pm": 149.63,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "answer it",
+   "ratio": 29.33,
+   "model_pm": 130.93,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "attached to",
+   "ratio": 29.33,
+   "model_pm": 130.93,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "by contrast",
+   "ratio": 29.33,
+   "model_pm": 130.93,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "the next word",
+   "ratio": 29.33,
+   "model_pm": 130.93,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "what you actually",
+   "ratio": 29.33,
+   "model_pm": 130.93,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "wrong and",
+   "ratio": 29.33,
+   "model_pm": 130.93,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "the strongest",
+   "ratio": 26.12,
+   "model_pm": 299.27,
+   "human_pm": 10.5
+  },
+  {
+   "gram": "a test",
+   "ratio": 25.17,
+   "model_pm": 112.23,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "is genuinely",
+   "ratio": 25.17,
+   "model_pm": 112.23,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "it runs",
+   "ratio": 25.17,
+   "model_pm": 112.23,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "model does",
+   "ratio": 25.17,
+   "model_pm": 112.23,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "paragraph that",
+   "ratio": 25.17,
+   "model_pm": 112.23,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "person who",
+   "ratio": 25.17,
+   "model_pm": 112.23,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "reach for",
+   "ratio": 25.17,
+   "model_pm": 112.23,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "which parts of",
+   "ratio": 25.17,
+   "model_pm": 112.23,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "benchmark",
+   "ratio": 22.87,
+   "model_pm": 261.86,
+   "human_pm": 10.5
+  },
+  {
+   "gram": "of millions of",
+   "ratio": 21.18,
+   "model_pm": 168.34,
+   "human_pm": 7.0
+  },
+  {
+   "gram": "and models",
+   "ratio": 21.01,
+   "model_pm": 93.52,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "because the model",
+   "ratio": 21.01,
+   "model_pm": 93.52,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "is trained to",
+   "ratio": 21.01,
+   "model_pm": 93.52,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "raw material",
+   "ratio": 21.01,
+   "model_pm": 93.52,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "updating the",
+   "ratio": 21.01,
+   "model_pm": 93.52,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "nobody",
+   "ratio": 20.59,
+   "model_pm": 523.72,
+   "human_pm": 24.49
+  },
+  {
+   "gram": "carries",
+   "ratio": 19.61,
+   "model_pm": 224.45,
+   "human_pm": 10.5
+  },
+  {
+   "gram": "confusion",
+   "ratio": 19.61,
+   "model_pm": 224.45,
+   "human_pm": 10.5
+  },
+  {
+   "gram": "shifted",
+   "ratio": 19.61,
+   "model_pm": 224.45,
+   "human_pm": 10.5
+  },
+  {
+   "gram": "bound",
+   "ratio": 19.39,
+   "model_pm": 561.13,
+   "human_pm": 27.99
+  },
+  {
+   "gram": "comprehension",
+   "ratio": 18.78,
+   "model_pm": 280.56,
+   "human_pm": 13.99
+  },
+  {
+   "gram": "computes",
+   "ratio": 18.38,
+   "model_pm": 467.6,
+   "human_pm": 24.49
+  },
+  {
+   "gram": "confident",
+   "ratio": 17.91,
+   "model_pm": 392.79,
+   "human_pm": 20.99
+  },
+  {
+   "gram": "genuinely",
+   "ratio": 17.88,
+   "model_pm": 579.83,
+   "human_pm": 31.49
+  },
+  {
+   "gram": "friction",
+   "ratio": 17.53,
+   "model_pm": 261.86,
+   "human_pm": 13.99
+  },
+  {
+   "gram": "seven",
+   "ratio": 17.53,
+   "model_pm": 261.86,
+   "human_pm": 13.99
+  },
+  {
+   "gram": "quietly",
+   "ratio": 16.92,
+   "model_pm": 430.2,
+   "human_pm": 24.49
+  },
+  {
+   "gram": "a change",
+   "ratio": 16.85,
+   "model_pm": 74.82,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "a description",
+   "ratio": 16.85,
+   "model_pm": 74.82,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "code makes",
+   "ratio": 16.85,
+   "model_pm": 74.82,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "hand written",
+   "ratio": 16.85,
+   "model_pm": 74.82,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "have not",
+   "ratio": 16.85,
+   "model_pm": 74.82,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "in your head",
+   "ratio": 16.85,
+   "model_pm": 74.82,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "the distinction",
+   "ratio": 16.85,
+   "model_pm": 74.82,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "the layout",
+   "ratio": 16.85,
+   "model_pm": 74.82,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "to a model",
+   "ratio": 16.85,
+   "model_pm": 74.82,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "writes a",
+   "ratio": 16.85,
+   "model_pm": 74.82,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "yet the",
+   "ratio": 16.85,
+   "model_pm": 74.82,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "are usually",
+   "ratio": 16.5,
+   "model_pm": 130.93,
+   "human_pm": 7.0
+  },
+  {
+   "gram": "for years",
+   "ratio": 16.5,
+   "model_pm": 130.93,
+   "human_pm": 7.0
+  },
+  {
+   "gram": "in ways that",
+   "ratio": 16.5,
+   "model_pm": 130.93,
+   "human_pm": 7.0
+  },
+  {
+   "gram": "predict the next",
+   "ratio": 15.04,
+   "model_pm": 224.45,
+   "human_pm": 13.99
+  },
+  {
+   "gram": "won",
+   "ratio": 14.73,
+   "model_pm": 168.34,
+   "human_pm": 10.5
+  },
+  {
+   "gram": "edges",
+   "ratio": 14.65,
+   "model_pm": 1140.95,
+   "human_pm": 76.97
+  },
+  {
+   "gram": "matters because",
+   "ratio": 14.16,
+   "model_pm": 112.23,
+   "human_pm": 7.0
+  },
+  {
+   "gram": "next time you",
+   "ratio": 14.16,
+   "model_pm": 112.23,
+   "human_pm": 7.0
+  },
+  {
+   "gram": "only to",
+   "ratio": 14.16,
+   "model_pm": 112.23,
+   "human_pm": 7.0
+  },
+  {
+   "gram": "of dollars",
+   "ratio": 13.79,
+   "model_pm": 205.75,
+   "human_pm": 13.99
+  },
+  {
+   "gram": "the product",
+   "ratio": 13.79,
+   "model_pm": 205.75,
+   "human_pm": 13.99
+  },
+  {
+   "gram": "produced",
+   "ratio": 13.65,
+   "model_pm": 299.27,
+   "human_pm": 20.99
+  },
+  {
+   "gram": "means the",
+   "ratio": 13.25,
+   "model_pm": 336.68,
+   "human_pm": 24.49
+  },
+  {
+   "gram": "roughly",
+   "ratio": 13.25,
+   "model_pm": 336.68,
+   "human_pm": 24.49
+  },
+  {
+   "gram": "drift",
+   "ratio": 13.2,
+   "model_pm": 243.15,
+   "human_pm": 17.49
+  },
+  {
+   "gram": "cuts",
+   "ratio": 13.1,
+   "model_pm": 149.63,
+   "human_pm": 10.5
+  },
+  {
+   "gram": "measured",
+   "ratio": 13.1,
+   "model_pm": 149.63,
+   "human_pm": 10.5
+  },
+  {
+   "gram": "billions of",
+   "ratio": 12.8,
+   "model_pm": 280.56,
+   "human_pm": 20.99
+  },
+  {
+   "gram": "observation",
+   "ratio": 12.8,
+   "model_pm": 280.56,
+   "human_pm": 20.99
+  },
+  {
+   "gram": "positions",
+   "ratio": 12.8,
+   "model_pm": 280.56,
+   "human_pm": 20.99
+  },
+  {
+   "gram": "a cycle of",
+   "ratio": 12.7,
+   "model_pm": 56.11,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "a remarkable",
+   "ratio": 12.7,
+   "model_pm": 56.11,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "can reason about",
+   "ratio": 12.7,
+   "model_pm": 56.11,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "doesn't understand",
+   "ratio": 12.7,
+   "model_pm": 56.11,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "from memory",
+   "ratio": 12.7,
+   "model_pm": 56.11,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "gives the",
+   "ratio": 12.7,
+   "model_pm": 56.11,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "is harder than",
+   "ratio": 12.7,
+   "model_pm": 56.11,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "it reaches",
+   "ratio": 12.7,
+   "model_pm": 56.11,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "it's that",
+   "ratio": 12.7,
+   "model_pm": 56.11,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "it's worth",
+   "ratio": 12.7,
+   "model_pm": 56.11,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "itself is a",
+   "ratio": 12.7,
+   "model_pm": 56.11,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "onto the",
+   "ratio": 12.7,
+   "model_pm": 56.11,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "that had",
+   "ratio": 12.7,
+   "model_pm": 56.11,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "that's the whole",
+   "ratio": 12.7,
+   "model_pm": 56.11,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "treating the",
+   "ratio": 12.7,
+   "model_pm": 56.11,
+   "human_pm": 3.5
+  },
+  {
+   "gram": "could not",
+   "ratio": 12.54,
+   "model_pm": 187.04,
+   "human_pm": 13.99
+  },
+  {
+   "gram": "enormous",
+   "ratio": 12.19,
+   "model_pm": 224.45,
+   "human_pm": 17.49
+  },
+  {
+   "gram": "edge",
+   "ratio": 12.0,
+   "model_pm": 598.53,
+   "human_pm": 48.98
+  },
+  {
+   "gram": "ten",
+   "ratio": 11.95,
+   "model_pm": 261.86,
+   "human_pm": 20.99
+  },
+  {
+   "gram": "a way of",
+   "ratio": 11.82,
+   "model_pm": 93.52,
+   "human_pm": 7.0
+  },
+  {
+   "gram": "and that the",
+   "ratio": 11.82,
+   "model_pm": 93.52,
+   "human_pm": 7.0
+  },
+  {
+   "gram": "asking a",
+   "ratio": 11.82,
+   "model_pm": 93.52,
+   "human_pm": 7.0
+  },
+  {
+   "gram": "had been",
+   "ratio": 11.82,
+   "model_pm": 93.52,
+   "human_pm": 7.0
+  },
+  {
+   "gram": "is never",
+   "ratio": 11.82,
+   "model_pm": 93.52,
+   "human_pm": 7.0
+  },
+  {
+   "gram": "record of",
+   "ratio": 11.82,
+   "model_pm": 93.52,
+   "human_pm": 7.0
+  },
+  {
+   "gram": "that single",
+   "ratio": 11.82,
+   "model_pm": 93.52,
+   "human_pm": 7.0
+  },
+  {
+   "gram": "the fourth",
+   "ratio": 11.82,
+   "model_pm": 93.52,
+   "human_pm": 7.0
+  },
+  {
+   "gram": "the result and",
+   "ratio": 11.82,
+   "model_pm": 93.52,
+   "human_pm": 7.0
+  },
+  {
+   "gram": "when a",
+   "ratio": 11.62,
+   "model_pm": 579.83,
+   "human_pm": 48.98
+  },
+  {
+   "gram": "coordinate",
+   "ratio": 11.48,
+   "model_pm": 130.93,
+   "human_pm": 10.5
+  },
+  {
+   "gram": "is that a",
+   "ratio": 11.48,
+   "model_pm": 130.93,
+   "human_pm": 10.5
+  },
+  {
+   "gram": "a separate",
+   "ratio": 11.29,
+   "model_pm": 168.34,
+   "human_pm": 13.99
+  },
+  {
+   "gram": "by one",
+   "ratio": 11.29,
+   "model_pm": 168.34,
+   "human_pm": 13.99
+  },
+  {
+   "gram": "delivered",
+   "ratio": 11.29,
+   "model_pm": 168.34,
+   "human_pm": 13.99
+  },
+  {
+   "gram": "fourth",
+   "ratio": 11.29,
+   "model_pm": 168.34,
+   "human_pm": 13.99
+  },
+  {
+   "gram": "volume",
+   "ratio": 11.29,
+   "model_pm": 168.34,
+   "human_pm": 13.99
+  },
+  {
+   "gram": "act of",
+   "ratio": 11.18,
+   "model_pm": 205.75,
+   "human_pm": 17.49
+  },
+  {
+   "gram": "candidate",
+   "ratio": 11.18,
+   "model_pm": 205.75,
+   "human_pm": 17.49
+  },
+  {
+   "gram": "arithmetic",
+   "ratio": 11.1,
+   "model_pm": 243.15,
+   "human_pm": 20.99
+  },
+  {
+   "gram": "worth",
+   "ratio": 10.52,
+   "model_pm": 598.53,
+   "human_pm": 55.98
+  },
+  {
+   "gram": "the loop",
+   "ratio": 10.51,
+   "model_pm": 561.13,
+   "human_pm": 52.48
+  },
+  {
+   "gram": "condition",
+   "ratio": 10.39,
+   "model_pm": 336.68,
+   "human_pm": 31.49
+  },
+  {
+   "gram": "of real",
+   "ratio": 10.36,
+   "model_pm": 299.27,
+   "human_pm": 27.99
+  },
+  {
+   "gram": "treating",
+   "ratio": 10.31,
+   "model_pm": 261.86,
+   "human_pm": 24.49
+  },
+  {
+   "gram": "boundary",
+   "ratio": 10.25,
+   "model_pm": 224.45,
+   "human_pm": 20.99
+  },
+  {
+   "gram": "mental model",
+   "ratio": 10.17,
+   "model_pm": 187.04,
+   "human_pm": 17.49
+  },
+  {
+   "gram": "checks",
+   "ratio": 10.05,
+   "model_pm": 149.63,
+   "human_pm": 13.99
+  },
+  {
+   "gram": "specification",
+   "ratio": 10.05,
+   "model_pm": 149.63,
+   "human_pm": 13.99
+  },
+  {
+   "gram": "cheap",
+   "ratio": 9.97,
+   "model_pm": 392.79,
+   "human_pm": 38.48
+  },
+  {
+   "gram": "difficulty",
+   "ratio": 9.87,
+   "model_pm": 561.13,
+   "human_pm": 55.98
+  },
+  {
+   "gram": "a clean",
+   "ratio": 9.85,
+   "model_pm": 112.23,
+   "human_pm": 10.5
+  },
+  {
+   "gram": "a handful of",
+   "ratio": 9.85,
+   "model_pm": 112.23,
+   "human_pm": 10.5
+  },
+  {
+   "gram": "deserves",
+   "ratio": 9.85,
+   "model_pm": 112.23,
+   "human_pm": 10.5
+  },
+  {
+   "gram": "difficulties",
+   "ratio": 9.85,
+   "model_pm": 112.23,
+   "human_pm": 10.5
+  },
+  {
+   "gram": "framing",
+   "ratio": 9.85,
+   "model_pm": 112.23,
+   "human_pm": 10.5
+  },
+  {
+   "gram": "log",
+   "ratio": 9.85,
+   "model_pm": 112.23,
+   "human_pm": 10.5
+  },
+  {
+   "gram": "quiet",
+   "ratio": 9.85,
+   "model_pm": 112.23,
+   "human_pm": 10.5
+  },
+  {
+   "gram": "reading a",
+   "ratio": 9.85,
+   "model_pm": 112.23,
+   "human_pm": 10.5
+  },
+  {
+   "gram": "shifting",
+   "ratio": 9.85,
+   "model_pm": 112.23,
+   "human_pm": 10.5
+  },
+  {
+   "gram": "something else",
+   "ratio": 9.85,
+   "model_pm": 112.23,
+   "human_pm": 10.5
+  },
+  {
+   "gram": "substitute",
+   "ratio": 9.85,
+   "model_pm": 112.23,
+   "human_pm": 10.5
+  },
+  {
+   "gram": "tendency",
+   "ratio": 9.85,
+   "model_pm": 112.23,
+   "human_pm": 10.5
+  },
+  {
+   "gram": "the words",
+   "ratio": 9.85,
+   "model_pm": 112.23,
+   "human_pm": 10.5
+  },
+  {
+   "gram": "treats",
+   "ratio": 9.85,
+   "model_pm": 112.23,
+   "human_pm": 10.5
+  },
+  {
+   "gram": "what matters",
+   "ratio": 9.85,
+   "model_pm": 112.23,
+   "human_pm": 10.5
+  },
+  {
+   "gram": "earlier",
+   "ratio": 9.82,
+   "model_pm": 317.97,
+   "human_pm": 31.49
+  },
+  {
+   "gram": "binary",
+   "ratio": 9.65,
+   "model_pm": 1122.25,
+   "human_pm": 115.45
+  },
+  {
+   "gram": "judgment",
+   "ratio": 9.6,
+   "model_pm": 411.49,
+   "human_pm": 41.98
+  },
+  {
+   "gram": "writes",
+   "ratio": 9.58,
+   "model_pm": 243.15,
+   "human_pm": 24.49
+  },
+  {
+   "gram": "failure",
+   "ratio": 9.54,
+   "model_pm": 542.42,
+   "human_pm": 55.98
+  },
+  {
+   "gram": "a version",
+   "ratio": 9.48,
+   "model_pm": 74.82,
+   "human_pm": 7.0
+  },
+  {
+   "gram": "and it has",
+   "ratio": 9.48,
+   "model_pm": 74.82,
+   "human_pm": 7.0
+  },
+  {
+   "gram": "around it",
+   "ratio": 9.48,
+   "model_pm": 74.82,
+   "human_pm": 7.0
+  },
+  {
+   "gram": "but it was",
+   "ratio": 9.48,
+   "model_pm": 74.82,
+   "human_pm": 7.0
+  },
+  {
+   "gram": "not actually",
+   "ratio": 9.48,
+   "model_pm": 74.82,
+   "human_pm": 7.0
+  },
+  {
+   "gram": "one you",
+   "ratio": 9.48,
+   "model_pm": 74.82,
+   "human_pm": 7.0
+  },
+  {
+   "gram": "the model doesn't",
+   "ratio": 9.48,
+   "model_pm": 74.82,
+   "human_pm": 7.0
+  },
+  {
+   "gram": "proved",
+   "ratio": 9.38,
+   "model_pm": 336.68,
+   "human_pm": 34.99
+  },
+  {
+   "gram": "a cycle",
+   "ratio": 9.16,
+   "model_pm": 168.34,
+   "human_pm": 17.49
+  },
+  {
+   "gram": "existed",
+   "ratio": 9.16,
+   "model_pm": 168.34,
+   "human_pm": 17.49
+  },
+  {
+   "gram": "reward",
+   "ratio": 8.86,
+   "model_pm": 317.97,
+   "human_pm": 34.99
+  },
+  {
+   "gram": "model as",
+   "ratio": 8.84,
+   "model_pm": 224.45,
+   "human_pm": 24.49
+  }
+ ],
+ "false_positive_rate": 0.207
+}
