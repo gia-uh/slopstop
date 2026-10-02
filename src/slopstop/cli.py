@@ -94,6 +94,18 @@ def cmd_unmask(args) -> int:
     return 0
 
 
+def cmd_check_quotes(args) -> int:
+    from slopstop import quotes
+    try:
+        data = json.loads(read(args.json))
+    except json.JSONDecodeError as e:
+        raise UsageError(f"{args.json} is not valid JSON: {e}") from e
+    opt = lambda p: read(p) if p else None  # noqa: E731
+    print(json.dumps(quotes.check(data, opt(args.source), opt(args.output), opt(args.text)),
+                     indent=1, ensure_ascii=False))
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="slopstop", description="Mechanical AI-slop detection with instructions for the agent that fixes it.")
     p.add_argument("--version", action="version", version=f"slopstop {__version__}")
@@ -133,6 +145,13 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--code", required=True)
     s.add_argument("-o")
     s.set_defaults(func=cmd_unmask)
+
+    s = sub.add_parser("check-quotes", help="keep only the quotes found verbatim in the texts")
+    s.add_argument("json")
+    s.add_argument("--source")
+    s.add_argument("--output")
+    s.add_argument("--text")
+    s.set_defaults(func=cmd_check_quotes)
     return p
 
 
