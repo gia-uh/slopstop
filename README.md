@@ -30,27 +30,52 @@ documentation. Published work does: articles, books, papers and talks.
 
 ## What the project does
 
-slopstop will hold three things.
+slopstop has two parts.
 
-1. **A slop detector** that flags the tells readers react to and points at the
-   exact span. It combines mechanical checks measured against human baselines,
-   an open classifier run locally, and a model critic that quotes the passages
-   it objects to instead of giving them a score. A new register, such as formal
-   academic prose or a personal essay, is a folder of human-written examples,
-   with no model training involved.
-2. **Writing workflows** that produce good AI-assisted prose. Examples include
-   dictating a draft in your own language and having a model translate and
-   clean it up under a strict edit budget, or rewriting a model's draft with a
-   cheaper, different model and checking that no claim was dropped or invented.
-   Each workflow is an experiment until the measurements say it works.
-3. **What we learn**, written down with its evidence. The research reports,
-   the experiments and their numbers live here, so every rule in the tools can
-   point to the measurement behind it.
+1. **A mechanical tool**, the `slopstop` command. It encodes the rules for
+   finding AI slop and the human baselines they are measured against. It
+   checks texts, and it tells an agent what to fix and how the fix will be
+   checked. It calls no model.
+   - `profile` counts a register from a folder of human-written texts. A new
+     register, such as formal academic prose or one author's blog, is a folder
+     of examples, with no model training involved.
+   - `detect` reports the spans a reader would flag. Each finding carries the
+     register's measured rate, an instruction, and the check that verifies the
+     fix, and is marked required or optional.
+   - `gate` checks a model's output against its input: duplicated blocks,
+     unclosed code fences, truncation, lines addressed to the user, length, and
+     whether a fix touched only what it was allowed to.
+   - `mask` and `unmask` keep code blocks away from rewriting models.
+   - `instruct` prints a task for the agent (split a dictation, rewrite it,
+     judge a rewrite's fidelity, critique a text, polish a draft), and
+     `check-quotes` verifies the quotes the agent returns.
+   - `blind` builds anonymized packets for blind reads and records the
+     ranking.
+2. **Skills** for agents such as Claude Code, OpenCode or aegis, in
+   [skills/](skills/). They classify the text, choose a rewriting model that
+   applies no watermark, run the workflow, loop detect-and-fix until no
+   required finding is left, and write the disclosure.
 
-The project is in its research phase. The findings so far are in
+The research reports, the experiments and their numbers live here too, so every
+rule can point to the measurement behind it. The findings are in
 [docs/research](docs/research/), starting with the
 [synthesis](docs/research/2026-10-01-synthesis.md), and the experiments are in
-[experiments](experiments/). The tools come next.
+[experiments](experiments/).
+
+## Use it
+
+```bash
+uv tool install git+https://github.com/gia-uh/slopstop
+slopstop profile path/to/your/posts --name my-blog     # writes registers/my-blog.json
+slopstop detect draft.md --register my-blog             # findings, instructions, checks
+```
+
+Version 0.1 ships one register, `apiad-blog-en`, counted on one author's 147
+published posts; [its README](src/slopstop/registers/README.md) records how
+often it flags that author's own held-out posts. To let an agent drive the
+tool, copy `skills/slopstop/` into `.claude/skills/` and the clause in
+[skills/agent-clause.md](skills/agent-clause.md) into your CLAUDE.md or
+AGENTS.md.
 
 ## What we have found so far
 

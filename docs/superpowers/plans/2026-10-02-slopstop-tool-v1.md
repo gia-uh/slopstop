@@ -1,6 +1,6 @@
 ---
 date: 2026-10-02
-status: in progress
+status: done 2026-10-02
 spec: docs/superpowers/specs/2026-10-01-slopstop-design.md
 issue: https://github.com/gia-uh/slopstop/issues/3
 ---
@@ -83,7 +83,7 @@ skills/agent-clause.md               clause for CLAUDE.md / AGENTS.md
   - `text.FENCE` compiled regex for fence lines; `text.fences_balanced(raw: str) -> bool`
   - `cli.main(argv: list[str] | None = None) -> int`
 
-- [ ] **Step 1: Write `pyproject.toml`**
+- [x] **Step 1: Write `pyproject.toml`**
 
 ```toml
 [project]
@@ -112,7 +112,7 @@ packages = ["src/slopstop"]
 testpaths = ["tests"]
 ```
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 `tests/test_text.py`:
 
@@ -191,12 +191,12 @@ def test_no_command_is_usage_error(capsys):
     assert cli.main([]) == 2
 ```
 
-- [ ] **Step 3: Run tests to verify they fail**
+- [x] **Step 3: Run tests to verify they fail**
 
 Run: `uv run pytest tests/test_text.py tests/test_cli.py -q`
 Expected: FAIL with `ModuleNotFoundError: No module named 'slopstop'`.
 
-- [ ] **Step 4: Implement `__init__.py`, `text.py`, `cli.py`**
+- [x] **Step 4: Implement `__init__.py`, `text.py`, `cli.py`**
 
 `src/slopstop/__init__.py`:
 
@@ -364,7 +364,7 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 ```
 
-- [ ] **Step 5: Update `Makefile` and `.gitignore`**
+- [x] **Step 5: Update `Makefile` and `.gitignore`**
 
 `Makefile`:
 
@@ -381,12 +381,12 @@ test:
 
 Append to `.gitignore`: `dist/` and `*.egg-info/`.
 
-- [ ] **Step 6: Run tests to verify they pass**
+- [x] **Step 6: Run tests to verify they pass**
 
 Run: `uv run pytest tests/test_text.py tests/test_cli.py -q`
 Expected: 9 passed.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add pyproject.toml uv.lock Makefile .gitignore src/slopstop/__init__.py src/slopstop/cli.py src/slopstop/text.py tests/test_text.py tests/test_cli.py
@@ -414,7 +414,7 @@ git commit -m "feat: package scaffold, text utilities and CLI skeleton"
   - `register.split_holdout(files: list[Path], holdout: float) -> tuple[list[Path], list[Path]]`
   - Register JSON: `{"name", "lang", "texts", "holdout", "words", "tells": {name: {band keys..., "n": int}}, "phrases": [...], "false_positive_rate": float | None}`
 
-- [ ] **Step 1: Write the shared fixtures**
+- [x] **Step 1: Write the shared fixtures**
 
 `tests/conftest.py`:
 
@@ -451,7 +451,7 @@ def corpus(tmp_path: Path) -> Path:
     return d
 ```
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 `tests/test_register.py`:
 
@@ -500,12 +500,12 @@ def test_load_by_path_and_name(corpus, tmp_path, monkeypatch):
     assert register.load(str(regs / "mine.json"))["name"] == "mine"
 ```
 
-- [ ] **Step 3: Run tests to verify they fail**
+- [x] **Step 3: Run tests to verify they fail**
 
 Run: `uv run pytest tests/test_register.py -q`
 Expected: FAIL with `ImportError` for `register` / `tells`.
 
-- [ ] **Step 4: Implement `tells.py` with the first tell**
+- [x] **Step 4: Implement `tells.py` with the first tell**
 
 ```python
 """The tell catalog. Each tell measures one habit; bands come from a register.
@@ -567,7 +567,7 @@ _add(Tell(
 ))
 ```
 
-- [ ] **Step 5: Implement `register.py`**
+- [x] **Step 5: Implement `register.py`**
 
 ```python
 """Registers: per-tell percentiles counted over a folder of human-written texts."""
@@ -666,12 +666,12 @@ def detect(raw: str, reg: dict, file: str) -> dict:
     return {"findings": []}
 ```
 
-- [ ] **Step 6: Run tests to verify they pass**
+- [x] **Step 6: Run tests to verify they pass**
 
 Run: `uv run pytest tests/test_register.py -q`
 Expected: 5 passed.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/slopstop/tells.py src/slopstop/register.py src/slopstop/detect.py tests/conftest.py tests/test_register.py
@@ -697,7 +697,7 @@ The thinnest usable slice: `slopstop profile <folder> --name x` then `slopstop d
   - `detect.render_text(report: dict) -> str`
   - CLI: `slopstop profile FOLDER --name NAME [--out PATH] [--model FOLDER ...] [--holdout 0.2]` writes JSON (default `registers/NAME.json`), prints a one-line summary; `slopstop detect FILE --register REF [--json]` exits 1 if any finding is required, else 0.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `tests/test_detect.py`:
 
@@ -775,12 +775,12 @@ def test_cli_detect_missing_file_exits_2(tmp_path, capsys):
     assert "nope.md" in capsys.readouterr().err
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `uv run pytest tests/test_detect.py -q`
 Expected: FAIL (`severity` and `orig_path` missing, CLI has no subcommands).
 
-- [ ] **Step 3: Implement `detect.py`**
+- [x] **Step 3: Implement `detect.py`**
 
 ```python
 """Findings against a register, each with an instruction for the agent and the check that verifies it."""
@@ -883,7 +883,7 @@ def to_json(rep: dict) -> str:
     return json.dumps(rep, indent=1, ensure_ascii=False)
 ```
 
-- [ ] **Step 4: Wire `profile` and `detect` into `cli.py`**
+- [x] **Step 4: Wire `profile` and `detect` into `cli.py`**
 
 Add helpers and subparsers. Replace `build_parser` and add command functions:
 
@@ -954,16 +954,16 @@ def build(human, models):
     return []
 ```
 
-- [ ] **Step 5: Run tests to verify they pass**
+- [x] **Step 5: Run tests to verify they pass**
 
 Run: `uv run pytest tests/test_detect.py tests/test_register.py -q`
 Expected: all pass. A value on a boundary is inside: 10.0 equals p99, so it is optional, not required.
 
-- [ ] **Step 6: Break it on purpose**
+- [x] **Step 6: Break it on purpose**
 
 Change `value > band["p99"]` to `value >= band["p0.5"]` in `severity`, run `uv run pytest tests/test_detect.py -q`, confirm failures, restore.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/slopstop/detect.py src/slopstop/cli.py src/slopstop/phrases.py tests/test_detect.py
@@ -982,7 +982,7 @@ git commit -m "feat: detect and profile commands with required/optional findings
 - Consumes: `text.*`, `tells.Tell`, `tells.Measure`, `tells.Span`
 - Produces: catalog entries named exactly `em-dash`, `mid-sentence-colon`, `corrective`, `metaphor-nouns`, `headings`, `bold`, `sentence-length`, `sentence-spread`, `repeated-openers`, `triplets`, `summary-closers`, `signposts`, `overused-phrases`. All are `unit="doc"`, `sided="two"`. Allow kinds: `punctuation` for em-dash and mid-sentence-colon; `span` for the rest. Each measure returns a single `Measure` whose value is a rate per 1000 words (percent of sentences for `repeated-openers`, words for `sentence-length` and `sentence-spread`).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `tests/test_tells.py`:
 
@@ -1072,12 +1072,12 @@ def test_every_tell_has_instructions_and_description(name):
     assert t.allow in {"breaks", "punctuation", "span", "rewrite"}
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `uv run pytest tests/test_tells.py -q`
 Expected: FAIL with `KeyError: 'em-dash'`.
 
-- [ ] **Step 3: Implement the measures in `tells.py`**
+- [x] **Step 3: Implement the measures in `tells.py`**
 
 Append after the long-paragraph tell:
 
@@ -1251,17 +1251,17 @@ for name, allow, fn, what, high, low in [
 
 Move the `import re` and `import statistics` lines to the top of the module with the other imports.
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `uv run pytest tests/test_tells.py -q`
 Expected: all pass. If `test_repeated_openers_percent` gives a different value, check that `_sentences_with_lines` splits "The cat sat. The dog ran. A bird flew. The end came." into four sentences; "The dog ran." repeats "the" from "The cat sat.", so 1 of 4.
 
-- [ ] **Step 5: Run the whole suite**
+- [x] **Step 5: Run the whole suite**
 
 Run: `uv run pytest -q`
 Expected: all pass (registers now carry bands for 14 tells).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/slopstop/tells.py tests/test_tells.py
@@ -1280,7 +1280,7 @@ git commit -m "feat: mechanical tell catalog (punctuation, correctives, rhythm, 
 - Consumes: `text.tokenize`, `text.strip_markdown`, `text.split_sentences`, `text.WORD`, `text.normalize`
 - Produces: `phrases.build(human: Path, models: list[Path], max_n: int = 3, min_count: int = 3, min_docs: int = 2, min_ratio: float = 5.0, top: int = 200) -> list[dict]`, each `{"gram": str, "ratio": float, "model_pm": float, "human_pm": float}`, sorted by ratio descending. Excludes n-grams containing a proper noun (capitalized at least 60% of the time away from a sentence start in either corpus) or a word the human corpus uses fewer than 3 times (topic words). Excludes an n-gram when a longer kept n-gram containing it explains at least 80% of its occurrences.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 `tests/test_phrases.py`:
 
@@ -1310,12 +1310,12 @@ def test_overused_phrase_found_topic_and_names_excluded(tmp_path):
     assert "at its" not in grams                       # explained by the longer phrase
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `uv run pytest tests/test_phrases.py -q`
 Expected: FAIL (`build` returns `[]`).
 
-- [ ] **Step 3: Implement `phrases.py`**
+- [x] **Step 3: Implement `phrases.py`**
 
 ```python
 """Phrases model text overuses against a register's human texts.
@@ -1386,12 +1386,12 @@ def build(human: Path, models: list[Path], max_n: int = 3, min_count: int = 3,
     return out[:top]
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `uv run pytest tests/test_phrases.py -q`
 Expected: PASS. If "at its core" is excluded as a topic word, check that the human fixture includes "core", "at" and "its" at least 3 times each (it repeats 4 files × 1 = 4 times).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/slopstop/phrases.py tests/test_phrases.py
@@ -1415,7 +1415,7 @@ git commit -m "feat: over-represented phrase list in profile (port of slopcheck)
   - `gate.PLACEHOLDER = re.compile(r"\[CODE-\d+\]")`
   - CLI: `slopstop gate SOURCE [OUTPUT] [--allow KIND] [--ratio LO:HI] [--lines 1,2] [--budget F] [--split JSON] [--transcript]`; prints `PASS` or `FAIL` with one reason per line, warnings prefixed `warning:`; exit 0 on pass, 1 on fail.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `tests/test_gate.py`:
 
@@ -1487,12 +1487,12 @@ def test_cli_gate_pass_fail_and_missing(tmp_path, capsys):
     assert cli.main(["gate", str(tmp_path / "x.md")]) == 2
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `uv run pytest tests/test_gate.py -q`
 Expected: FAIL with `ImportError`.
 
-- [ ] **Step 3: Implement `gate.py` (structural part)**
+- [x] **Step 3: Implement `gate.py` (structural part)**
 
 ```python
 """Deterministic checks of a model's output against its input.
@@ -1597,7 +1597,7 @@ def check_output(src: str, out: str, allow: str = "rewrite", ratio: tuple[float,
     return r
 ```
 
-- [ ] **Step 4: Wire the CLI**
+- [x] **Step 4: Wire the CLI**
 
 In `cli.py` add:
 
@@ -1651,12 +1651,12 @@ def check_split(transcript: str, segments: list[dict]) -> Result:
     return Result()
 ```
 
-- [ ] **Step 5: Run tests to verify they pass**
+- [x] **Step 5: Run tests to verify they pass**
 
 Run: `uv run pytest tests/test_gate.py -q`
 Expected: all pass.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/slopstop/gate.py src/slopstop/cli.py tests/test_gate.py
@@ -1674,7 +1674,7 @@ git commit -m "feat: gate structural checks and input truncation check"
 **Interfaces:**
 - Produces: `check_output` enforces `breaks` (whitespace-split token sequence identical), `punctuation` (lowercase word sequence identical), `span` (no change outside `lines`, 1-based source line numbers; insertions only adjacent to an allowed line), `polish` (share of changed words ≤ `budget`), `rewrite` (length band, Task 6).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `tests/test_gate_allow.py`:
 
@@ -1717,12 +1717,12 @@ def test_polish_budget():
     assert any("budget" in f for f in gate.check_output(SRC, big, "polish", budget=0.15).failures)
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `uv run pytest tests/test_gate_allow.py -q`
 Expected: FAIL on breaks, punctuation, span and polish.
 
-- [ ] **Step 3: Implement the kinds** (append to `check_output` before `return r`)
+- [x] **Step 3: Implement the kinds** (append to `check_output` before `return r`)
 
 ```python
     if allow == "breaks" and src.split() != out.split():
@@ -1748,16 +1748,16 @@ Expected: FAIL on breaks, punctuation, span and polish.
             r.failures.append(f"--allow polish: {changed:.0%} of words changed, over the {budget:.0%} budget")
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `uv run pytest tests/test_gate.py tests/test_gate_allow.py -q`
 Expected: all pass.
 
-- [ ] **Step 5: Break it on purpose**
+- [x] **Step 5: Break it on purpose**
 
 Replace `src.split() != out.split()` with `False`, run `uv run pytest tests/test_gate_allow.py -q`, confirm `test_breaks_only` fails, restore.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/slopstop/gate.py tests/test_gate_allow.py
@@ -1779,7 +1779,7 @@ git commit -m "feat: gate --allow kinds verify what a fix may change"
   - `gate.check_split(transcript: str, segments: list[dict]) -> Result`: fails on an unknown kind, on a passage that is not verbatim (overlap < 0.9 at n=5), or on coverage < 0.98 (share of the transcript's 5-word windows found in the joined passages)
   - `check_output(..., split=...)` additionally fails when a request of 6+ words leaks into the output (overlap ≥ 0.3)
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `tests/test_gate_split.py`:
 
@@ -1825,12 +1825,12 @@ def test_leaked_request_fails_output():
     assert any("request" in f for f in r.failures)
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `uv run pytest tests/test_gate_split.py -q`
 Expected: FAIL (the stub passes everything).
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 Replace the `check_split` stub and add `overlap`:
 
@@ -1869,12 +1869,12 @@ In `check_output`, after `_structure(...)`, add:
             r.failures.append(f"a request reached the output: '{s['text'][:60]}'")
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `uv run pytest tests/test_gate_split.py tests/test_gate.py -q`
 Expected: all pass.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/slopstop/gate.py tests/test_gate_split.py
@@ -1895,7 +1895,7 @@ git commit -m "feat: gate checks a dictation split and request leaks"
   - `mask.unmask(s: str, blocks: dict[str, str]) -> str` raises `UsageError` if a placeholder is missing or repeated
   - CLI: `slopstop mask FILE` writes `<stem>.masked<suffix>` and `<stem>.code.json` next to it and prints both paths; `slopstop unmask FILE --code JSON [-o OUT]` prints to stdout unless `-o`.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `tests/test_mask.py`:
 
@@ -1933,12 +1933,12 @@ def test_cli_mask_unmask(tmp_path, capsys):
     assert out.read_text() == DOC
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `uv run pytest tests/test_mask.py -q`
 Expected: FAIL with `ImportError`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 `src/slopstop/mask.py`:
 
@@ -2013,12 +2013,12 @@ and in `build_parser`:
     s.set_defaults(func=cmd_unmask)
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `uv run pytest tests/test_mask.py -q`
 Expected: 3 passed.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/slopstop/mask.py src/slopstop/cli.py tests/test_mask.py
@@ -2039,7 +2039,7 @@ git commit -m "feat: mask and unmask code blocks"
   - `quotes.check(data: dict, source: str | None, output: str | None, text: str | None) -> dict`: for each list among `dropped` (checked against `source`), `invented` (against `output`), `items` (against `text`), sets `verified` on each item; returns `{"verified": {key: [items]}, "unverified": int}`; raises `UsageError` when a list is present but its text is not given
   - CLI: `slopstop check-quotes JSON [--source F] [--output F] [--text F]` prints the verified JSON; exit 0
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `tests/test_quotes.py`:
 
@@ -2082,12 +2082,12 @@ def test_cli(tmp_path, capsys):
     assert json.loads(capsys.readouterr().out)["unverified"] == 0
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `uv run pytest tests/test_quotes.py -q`
 Expected: FAIL with `ImportError`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 `src/slopstop/quotes.py`:
 
@@ -2152,12 +2152,12 @@ and in `build_parser`:
     s.set_defaults(func=cmd_check_quotes)
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `uv run pytest tests/test_quotes.py -q`
 Expected: 4 passed.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/slopstop/quotes.py src/slopstop/cli.py tests/test_quotes.py
@@ -2180,7 +2180,7 @@ git commit -m "feat: check-quotes verifies judge and critic quotes"
   - `instruct.prepared_dictation(segments: list[dict]) -> str` content with each directive inline as `{{directive}}`, requests removed
   - CLI: `slopstop instruct TASK FILE [FILE] [--split JSON] [--budget F]`; prints the task; exit 2 on wrong file count or a missing `--split` for `dictation`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `tests/test_instruct.py`:
 
@@ -2256,12 +2256,12 @@ def test_cli_wrong_file_count(files):
     assert cli.main(["instruct", "judge", str(t)]) == 2
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `uv run pytest tests/test_instruct.py -q`
 Expected: FAIL with `ImportError`.
 
-- [ ] **Step 3: Write the templates**
+- [x] **Step 3: Write the templates**
 
 Templates use `string.Template` (`$name`). Each ends with the check line.
 
@@ -2416,7 +2416,7 @@ Then edit $file in place.
 Then run: slopstop gate $orig $file --allow polish --budget $budget
 ```
 
-- [ ] **Step 4: Implement `instruct.py`**
+- [x] **Step 4: Implement `instruct.py`**
 
 ```python
 """Tasks for the agent, built for the files in hand. The tool never runs them."""
@@ -2511,17 +2511,17 @@ and in `build_parser`:
     s.set_defaults(func=cmd_instruct)
 ```
 
-- [ ] **Step 5: Run tests to verify they pass**
+- [x] **Step 5: Run tests to verify they pass**
 
 Run: `uv run pytest tests/test_instruct.py -q`
 Expected: all pass. If a template raises `KeyError`, the template uses a `$name` that `render` does not set; add it to `v` for that task.
 
-- [ ] **Step 6: Confirm templates ship in the wheel**
+- [x] **Step 6: Confirm templates ship in the wheel**
 
 Run: `uv build --wheel -q && unzip -l dist/*.whl | grep instructions/`
 Expected: six `.md` files listed.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/slopstop/instruct.py src/slopstop/instructions src/slopstop/cli.py tests/test_instruct.py
@@ -2542,7 +2542,7 @@ git commit -m "feat: instruct prints split, dictation, restyle, judge, critic an
   - `blind.record(key: dict, ranking: str) -> dict` parses `"V2>V1=V3"` into `key["ranking"] = [["path2"], ["path1", "path3"]]`; raises `UsageError` on an unknown version or a version listed twice
   - CLI: `slopstop blind make FILE FILE... --seed N --out PACKET --key KEY [--title T]`, `slopstop blind record KEY RANKING`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `tests/test_blind.py`:
 
@@ -2593,12 +2593,12 @@ def test_cli(versions, tmp_path):
     assert len(json.loads(k.read_text())["ranking"]) == 3
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `uv run pytest tests/test_blind.py -q`
 Expected: FAIL with `ImportError`.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 `src/slopstop/blind.py`:
 
@@ -2691,12 +2691,12 @@ and in `build_parser`:
     r.set_defaults(func=cmd_blind_record)
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `uv run pytest tests/test_blind.py -q`
 Expected: 4 passed.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/slopstop/blind.py src/slopstop/cli.py tests/test_blind.py
@@ -2715,7 +2715,7 @@ git commit -m "feat: blind packets with closed fences and rankings"
 - Consumes: `slopstop profile`, the corpora under `vault/Efforts/Areas/Writing/voice/corpus/slop/` (outside this repo)
 - Produces: a committed register named `apiad-blog-en` (counts only) and a `make register` target that regenerates it given `CORPUS=<path>`.
 
-- [ ] **Step 1: Add the Makefile target**
+- [x] **Step 1: Add the Makefile target**
 
 ```makefile
 CORPUS ?= ../../vault/Efforts/Areas/Writing/voice/corpus/slop
@@ -2731,12 +2731,12 @@ register:
 	  --out src/slopstop/registers/apiad-blog-en.json
 ```
 
-- [ ] **Step 2: Generate it**
+- [x] **Step 2: Generate it**
 
 Run: `make register`
 Expected: one line naming the file, about 117 training texts, a non-empty phrase count, and a false-positive rate on about 30 held-out texts. Open the JSON and confirm `tells.long-paragraph.p99` is near 112 and `p50` near 43 (the smoke test's numbers on all 147 posts).
 
-- [ ] **Step 3: Write the shipped-register test**
+- [x] **Step 3: Write the shipped-register test**
 
 `tests/test_shipped_register.py`:
 
@@ -2755,11 +2755,11 @@ def test_shipped_register_loads_and_covers_the_catalog():
 Run: `uv run pytest tests/test_shipped_register.py -q`
 Expected: PASS.
 
-- [ ] **Step 4: Record the false-positive rate**
+- [x] **Step 4: Record the false-positive rate**
 
 Write `src/slopstop/registers/README.md` with one row per register: name, source (the author's 147 Substack posts, 2023 to 2026), training and held-out text counts, word count, phrase count, and the false-positive rate from Step 2. If the rate is above 0.2, stop and report it before continuing: the catalog's bands are too tight for the register.
 
-- [ ] **Step 5: Measure each tell's precision against model text (local, not CI)**
+- [x] **Step 5: Measure each tell's precision against model text (local, not CI)**
 
 The spec asks for a precision and recall per tell. Run detect over the held-out
 human posts and over uninstructed model essays on the same topics, and count how
@@ -2786,7 +2786,7 @@ Record, per tell, the share of human and of model texts it flags as required, in
 `src/slopstop/registers/README.md`. A tell that flags human texts as often as
 model texts is not discriminating on this register; note it there.
 
-- [ ] **Step 6: Reproduce the smoke test (local, not CI)**
+- [x] **Step 6: Reproduce the smoke test (local, not CI)**
 
 Run, with the experiment 001 outputs in `.playground/rewrite-bakeoff/` of the workspace:
 
@@ -2804,7 +2804,7 @@ for s in dict-en-aislop dict-es-sindri dict-es-rift; do uv run slopstop detect .
 
 Expected: required long-paragraph findings on all three (3, 5 and 1 paragraphs over p99).
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add Makefile src/slopstop/registers tests/test_shipped_register.py
@@ -2822,7 +2822,7 @@ git commit -m "feat: ship the apiad-blog-en register with its measured false-pos
 - Consumes: every CLI command above, by exact name and flags.
 - Produces: a Claude Code skill users copy into `.claude/skills/slopstop/`; the same text works as OpenCode instructions or an aegis agent prompt.
 
-- [ ] **Step 1: Write the failing test** (keeps the skill honest about the CLI)
+- [x] **Step 1: Write the failing test** (keeps the skill honest about the CLI)
 
 `tests/test_skill.py`:
 
@@ -2850,7 +2850,7 @@ def test_every_command_in_the_skill_exists():
 Run: `uv run pytest tests/test_skill.py -q`
 Expected: FAIL (file missing).
 
-- [ ] **Step 2: Write `skills/slopstop/SKILL.md`**
+- [x] **Step 2: Write `skills/slopstop/SKILL.md`**
 
 ```markdown
 ---
@@ -2968,7 +2968,7 @@ that did. If a watermarking model wrote any final sentence after the author's
 last edit, say so and stop: the text needs another pass first.
 ```
 
-- [ ] **Step 3: Write `skills/agent-clause.md`**
+- [x] **Step 3: Write `skills/agent-clause.md`**
 
 ```markdown
 # Agent-instructions clause
@@ -2982,12 +2982,12 @@ Copy into CLAUDE.md or AGENTS.md:
 > or generated prose; it may split, outline, critique and check.
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `uv run pytest tests/test_skill.py -q`
 Expected: 2 passed.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add skills tests/test_skill.py
@@ -3003,15 +3003,15 @@ git commit -m "feat: the slopstop skill and the agent-instructions clause"
 
 **Interfaces:** none new.
 
-- [ ] **Step 1: Update `README.md` "What the project does"**
+- [x] **Step 1: Update `README.md` "What the project does"**
 
 Replace the three-item list with the two parts as the spec states them: the mechanical tool (commands listed with one line each) and the skills. Remove the mentions of an open classifier run locally and of a model critic inside the detector; the critic is now `slopstop instruct critic`, done by the agent. Add a "Use it" section with install (`uv tool install git+https://github.com/gia-uh/slopstop`), `slopstop profile`, `slopstop detect`, and how to copy `skills/slopstop/` into `.claude/skills/`. Change "The tools come next." to state that v0.1 ships the tool, one register and the skill. Keep both disclosure sections word for word (the Makefile greps them).
 
-- [ ] **Step 2: Update `AGENTS.md` "Where everything lives"**
+- [x] **Step 2: Update `AGENTS.md` "Where everything lives"**
 
 Add rows: `src/slopstop/` (the CLI), `src/slopstop/registers/` (shipped registers, counts only), `src/slopstop/instructions/` (task templates), `skills/` (agent skills users copy), `tests/` (pytest, run by `make test`).
 
-- [ ] **Step 3: End-to-end on a real text**
+- [x] **Step 3: End-to-end on a real text**
 
 Install the branch as a tool and run the dictation workflow on the English smoke-test transcript the way a user would, from a shell outside the repo:
 
@@ -3024,16 +3024,16 @@ slopstop instruct split note.md
 
 Do the split yourself, write `note.split.json`, run the printed check. Then `slopstop instruct dictation note.md --split note.split.json`, send the task to `deepseek/deepseek-v4-pro` on OpenRouter, save `note.draft.md`, run the printed gate, then `slopstop detect note.draft.md --register apiad-blog-en`, fix the required findings through the loop, and run detect again until it exits 0. Save the transcript of commands and outputs to `vault/+/agent_drafts/slopstop-e2e-001.md` in the workspace for the author to read.
 
-- [ ] **Step 4: Flip the status headers**
+- [x] **Step 4: Flip the status headers**
 
 Spec: `status: approved 2026-10-02` → `status: implemented (slices 1-5) 2026-10-02`. This plan: `status: in progress` → `status: done 2026-10-02`, with every checkbox ticked.
 
-- [ ] **Step 5: Run the full gate**
+- [x] **Step 5: Run the full gate**
 
 Run: `make test`
 Expected: exit 0. Read the rc directly, not through a pipe.
 
-- [ ] **Step 6: Commit and open the PR**
+- [x] **Step 6: Commit and open the PR**
 
 ```bash
 git add README.md AGENTS.md docs/superpowers/specs/2026-10-01-slopstop-design.md docs/superpowers/plans/2026-10-02-slopstop-tool-v1.md

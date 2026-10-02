@@ -1,6 +1,6 @@
 ---
 date: 2026-10-01
-status: approved 2026-10-02
+status: implemented (slices 1-5) 2026-10-02
 ---
 
 # slopstop design
