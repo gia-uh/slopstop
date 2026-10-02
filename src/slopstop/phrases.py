@@ -13,6 +13,7 @@ SMOOTH_PM = 1.0
 
 def _corpus(folders: list[Path], max_n: int):
     counts, docs, cap, tok = Counter(), Counter(), Counter(), Counter()
+    topics: dict[str, set] = {}
     total = 0
     for folder in folders:
         for f in sorted(Path(folder).rglob("*.md")):
@@ -32,18 +33,22 @@ def _corpus(folders: list[Path], max_n: int):
                         counts[g] += 1
                         seen.add(g)
             docs.update(seen)
+            for g in seen:
+                topics.setdefault(g, set()).add(f.stem)
     proper = {t for t, c in tok.items() if c >= 3 and cap[t] / c >= 0.6}
-    return counts, docs, proper, max(total, 1)
+    return counts, docs, topics, proper, max(total, 1)
 
 
 def build(human: Path, models: list[Path], max_n: int = 3, min_count: int = 3,
-          min_docs: int = 2, min_ratio: float = 5.0, top: int = 200) -> list[dict]:
-    hc, _, hp, ht = _corpus([human], max_n)
-    mc, md, mp, mt = _corpus(models, max_n)
+          min_docs: int = 2, min_topics: int = 3, min_ratio: float = 5.0, top: int = 200) -> list[dict]:
+    """min_topics counts distinct file names: model folders that write on the same topics
+    share file names, so a phrase seen under one name only is that topic's vocabulary."""
+    hc, _, _, hp, ht = _corpus([human], max_n)
+    mc, md, mt_topics, mp, mt = _corpus(models, max_n)
     proper = hp | mp
     kept = []
     for g, c in mc.items():
-        if c < min_count or md[g] < min_docs:
+        if c < min_count or md[g] < min_docs or len(mt_topics[g]) < min_topics:
             continue
         toks = g.split()
         if any(t in proper for t in toks) or any(hc.get(t, 0) < 3 for t in toks):

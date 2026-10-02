@@ -69,3 +69,12 @@ def test_cli_profile_then_detect(corpus, tmp_path, monkeypatch, capsys):
 def test_cli_detect_missing_file_exits_2(tmp_path, capsys):
     assert cli.main(["detect", str(tmp_path / "nope.md"), "--register", "x"]) == 2
     assert "nope.md" in capsys.readouterr().err
+
+
+def test_degenerate_band_is_skipped_with_note(corpus):
+    reg = register.build(corpus, "t")
+    reg["tells"]["bold"] = {k: 0.0 for k in reg["tells"]["bold"]} | {"n": 40}
+    raw = "Some **bold** words here. " * 60
+    rep = detect.detect(raw, reg, "b.md")
+    assert "bold" not in {f["tell"] for f in rep["findings"]}
+    assert any("bold" in n and "not measurable" in n for n in rep["notes"])

@@ -65,6 +65,10 @@ def detect(raw: str, reg: dict, file: str) -> dict:
         band = reg["tells"].get(name)
         if not band or not band.get("n") or (t.unit == "doc" and words < tells.MIN_WORDS):
             continue
+        if band["p0.5"] == band["p99.5"]:
+            notes.append(f"{name} is not measurable on register {reg['name']}: every human text "
+                         f"there has the same value ({band['p50']}), so it was skipped.")
+            continue
         for m in t.measure(raw, phrases):
             sev = severity(t, m.value, band)
             if sev:
