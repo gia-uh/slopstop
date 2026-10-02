@@ -1,6 +1,6 @@
 ---
 date: 2026-10-01
-status: draft, awaiting review
+status: approved 2026-10-02
 ---
 
 # slopstop design
