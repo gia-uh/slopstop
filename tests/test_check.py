@@ -152,3 +152,10 @@ def test_fix_leaves_code_spacing_alone(tmp_path):
     f.write_text("**Note:** run `set -a; . env` first. It may potentially fail.\n")
     cli.main(["fix", str(f)])
     assert f.read_text() == "Note: run `set -a; . env` first. It may fail.\n"
+
+
+def test_rewrite_findings_say_to_keep_the_original(tmp_path, capsys):
+    f = tmp_path / "a.md"
+    f.write_text("Caching isn't a trick, it's a decision.\n")
+    cli.main(["check", str(f)])
+    assert f"cp {f} {tmp_path / 'a.orig.md'}" in capsys.readouterr().out

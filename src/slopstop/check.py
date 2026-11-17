@@ -206,6 +206,9 @@ def render_text(reps: list[Report]) -> str:
             warns += f.level == "warn"
             auto += f.kind == "auto" and f.replacement is not None
             sug += f.kind == "suggest" and f.replacement is not None
+    rewrites = [rep.file for rep in reps if any(f.kind == "rewrite" or f.replacement is None for f in rep.findings)]
+    for file in rewrites:
+        out.append(f"Before a rewrite, keep the current text for its check: cp {file} {orig_path(file)}")
     out.append(f"{errors} errors, {warns} warnings in {len(reps)} file{'s' * (len(reps) != 1)}; "
                f"{auto} fixable with fix, {sug} more with fix --suggested")
     return "\n".join(out) + "\n"
