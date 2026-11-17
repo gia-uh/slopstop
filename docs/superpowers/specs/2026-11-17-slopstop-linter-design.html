@@ -164,6 +164,7 @@ mark.gone{background:rgba(157,176,126,.22);color:var(--ok);text-decoration:line-
   <a class="sub" href="#calibrate">calibrate</a>
   <a class="sub" href="#config">Config and suppression</a>
   <a href="#measure">Measurement</a>
+  <a class="sub" href="#spike">What the spike found</a>
   <a href="#skill">The skill</a>
   <a href="#removed">What goes away</a>
   <a href="#issue5">Issue #5</a>
@@ -210,7 +211,8 @@ mark.gone{background:rgba(157,176,126,.22);color:var(--ok);text-decoration:line-
 <tr><td>Severity</td><td><code>error</code> fails <code>check</code>; <code>warn</code> is reported and does not</td><td class="why"><span class="who q">proposed</span> Phrase rules are near-certain and fail the loop. Density and rhythm rules depend on genre and only warn by default.</td></tr>
 <tr><td>Registers</td><td>Gone. <code>calibrate</code> measures fire rates on a folder of good prose instead</td><td class="why"><span class="who q">proposed</span> A percentile band per author is what made v0.1 a deviation detector. A fire rate on good prose is the precision number a rule needs.</td></tr>
 <tr><td>Languages</td><td>English and Spanish in v0.2, chosen per file by the existing detector, or <code>--lang</code></td><td class="why"><span class="who q">proposed</span> The project's writers publish in both. Each rule declares its language; structural rules apply to both.</td></tr>
-<tr><td>Em dashes</td><td>Every em dash in prose is a finding, with a suggested period or comma</td><td class="why"><span class="who q">proposed</span> Models join two thoughts with a dash far more than careful writers do, and the split is almost always clearer. Authors who want dashes disable the rule in config.</td></tr>
+<tr><td>Em dashes</td><td>Every em dash in prose is a <code>warn</code> finding with a suggested period, comma or colon. A config sets it to <code>error</code> for agent-written text</td><td class="why"><span class="who">maintainer</span> The spike found em dashes in 117 of the reference author's 146 posts. As an error, the rule alone would fail 27% more of them, and the loop would rewrite every dash in the author's prose.</td></tr>
+<tr><td>Spike revisions</td><td>Drop empty-intensifier; narrow corrective, summary-closer and label-bullets; add five punctuation-density warnings</td><td class="why"><span class="who">maintainer</span> Section 06 lists the evidence for each change.</td></tr>
 </tbody>
 </table>
 
@@ -287,7 +289,7 @@ In short, caching is a powerful tool that can unlock new levels of speed. I hope
 </div>
 
 <h3 id="catalog">The v0.2 catalog</h3>
-<p>Twenty-two rules in five families. Phrase lists are short and literal; each entry was seen in model output and costs the reader time. Words that good writers use often, such as "crucial" and "robust", are not on any list: phase 0 measured the maintainer's own blog using them at higher rates than uninstructed Claude.</p>
+<p>Twenty-six rules in five families. Phrase lists are short and literal; each entry was seen in model output and costs the reader time. Words that good writers use often, such as "crucial" and "robust", are not on any list: phase 0 measured the maintainer's own blog using them at higher rates than uninstructed Claude.</p>
 <table class="tbl">
 <thead><tr><th>Rule</th><th>Catches</th><th>Example</th><th>Fix</th></tr></thead>
 <tbody>
@@ -296,22 +298,26 @@ In short, caching is a powerful tool that can unlock new levels of speed. I hope
 <tr><td>meta-commentary</td><td>Announcing that a point matters before making it</td><td class="ex">It's worth noting that the cache is shared.</td><td><span class="k-auto">auto</span> delete the phrase, capitalize <span class="lvl">error</span></td></tr>
 <tr><td>signposting</td><td>Sentences that announce what the text is about to do</td><td class="ex">In this section, we will explore how caching works.</td><td><span class="k-rw">rewrite</span> start with the content <span class="lvl">error</span></td></tr>
 <tr><td>hype</td><td>Marketing vocabulary with no claim behind it</td><td class="ex">unlock new levels of, game-changer, seamlessly, supercharge, in today's fast-paced world</td><td><span class="k-rw">rewrite</span> state what it does, with a number if there is one <span class="lvl">error</span></td></tr>
-<tr><td>corrective</td><td>Denying a reading nobody offered, then giving the real one</td><td class="ex">Caching isn't just a trick, it's a design decision.</td><td><span class="k-rw">rewrite</span> say what it is <span class="lvl">error</span></td></tr>
+<tr><td>corrective</td><td>Denying a reading nobody offered, then giving the real one. Only the contracted "isn't X; it's Y" shape: the reference author writes "not only X, but Y" more often than models do</td><td class="ex">Caching isn't just a trick, it's a design decision.</td><td><span class="k-rw">rewrite</span> say what it is <span class="lvl">error</span></td></tr>
 <tr><td>rhetorical-qa</td><td>A question the next few words answer</td><td class="ex">So what's the fix? Simple: invalidate on write.</td><td><span class="k-rw">rewrite</span> state the answer <span class="lvl">error</span></td></tr>
 <tr><td>colon-reveal</td><td>One to three words, a colon, then the point</td><td class="ex">The result: a faster build.</td><td><span class="k-sug">suggest</span> "The result is a faster build." <span class="lvl">warn</span></td></tr>
-<tr><td>summary-closer</td><td>A paragraph's last sentence restating the paragraph</td><td class="ex">In short, caching is a powerful tool.</td><td><span class="k-sug">suggest</span> delete the sentence <span class="lvl">error</span></td></tr>
+<tr><td>summary-closer</td><td>A paragraph's last sentence restating the paragraph, opened by "in short", "in summary", "to sum up" or similar ("in the end" and "ultimately" open intros too often)</td><td class="ex">In short, caching is a powerful tool.</td><td><span class="k-sug">suggest</span> delete the sentence <span class="lvl">error</span></td></tr>
 <tr><td>upbeat-ending</td><td>A final paragraph that ends on vague optimism</td><td class="ex">The future is bright, and the possibilities are endless.</td><td><span class="k-rw">rewrite</span> end on the last concrete point <span class="lvl">error</span></td></tr>
 <tr><td>hedge-stack</td><td>Two hedges where one, or none, would do</td><td class="ex">may potentially, could possibly, might perhaps, somewhat arguably</td><td><span class="k-auto">auto</span> keep the first hedge <span class="lvl">error</span></td></tr>
-<tr><td>empty-intensifier</td><td>Intensifiers that add emphasis and no content</td><td class="ex">truly, incredibly, absolutely essential, very unique</td><td><span class="k-auto">auto</span> delete the word <span class="lvl">warn</span></td></tr>
 <tr><td>metaphor-noun</td><td>Abstract nouns standing in for the concrete thing</td><td class="ex">landscape, tapestry, realm, substrate, harness, surface, north star</td><td><span class="k-rw">rewrite</span> use the concrete word <span class="lvl">warn</span></td></tr>
-<tr><td>em-dash</td><td>An em dash joining two thoughts</td><td class="ex">It works — but only on Linux.</td><td><span class="k-sug">suggest</span> period and capital, or comma for a pair <span class="lvl">error</span></td></tr>
+<tr><td>em-dash</td><td>An em dash in prose</td><td class="ex">It works — but only on Linux.</td><td><span class="k-sug">suggest</span> period and capital; comma for a pair in one sentence; colon before a list <span class="lvl">warn</span></td></tr>
 <tr><td>bold-spray</td><td>Bold inside running prose</td><td class="ex">a **stale cache** can **silently** serve wrong data</td><td><span class="k-auto">auto</span> remove the asterisks <span class="lvl">error</span></td></tr>
 <tr><td>emoji</td><td>Emoji in prose, headings or list items</td><td class="ex">🚀 Getting started</td><td><span class="k-auto">auto</span> delete <span class="lvl">error</span></td></tr>
-<tr><td>label-bullets</td><td>A list whose items are all "**Label**: sentence"</td><td class="ex">- **Speed**: The cache makes reads faster.</td><td><span class="k-rw">rewrite</span> as a paragraph, or a plain list <span class="lvl">warn</span></td></tr>
+<tr><td>label-bullets</td><td>A list of three or more items that are all "**Label**: sentence", where the text after the label is a sentence of eight words or more (key-value records such as "**Section**: §2" are left alone)</td><td class="ex">- **Speed**: The cache makes reads faster.</td><td><span class="k-rw">rewrite</span> as a paragraph, or a plain list <span class="lvl">warn</span></td></tr>
 <tr><td>heading-spray</td><td>Headings over sections shorter than 80 words</td><td class="ex">three headings in a 300-word answer</td><td><span class="k-rw">rewrite</span> merge the sections <span class="lvl">warn</span></td></tr>
 <tr><td>long-paragraph</td><td>A prose paragraph over 180 words</td><td class="ex">(by count)</td><td><span class="k-rw">rewrite</span> break where the argument moves <span class="lvl">warn</span></td></tr>
 <tr><td>flat-rhythm</td><td>Eight or more sentences in a row within four words of the same length</td><td class="ex">(by count)</td><td><span class="k-rw">rewrite</span> join or split some <span class="lvl">warn</span></td></tr>
 <tr><td>repeated-opener</td><td>Three sentences in a row opening with the same word</td><td class="ex">This means… This shows… This is…</td><td><span class="k-rw">rewrite</span> vary or merge <span class="lvl">warn</span></td></tr>
+<tr><td>semicolon-spray</td><td>Three or more semicolons in one paragraph</td><td class="ex">This is X; that is Y; the rest is Z.</td><td><span class="k-rw">rewrite</span> split into sentences <span class="lvl">warn</span></td></tr>
+<tr><td>aside-spray</td><td>Three or more parenthetical asides of 20 characters or more in one paragraph</td><td class="ex">(which matters) … (see below for details) … (the usual case)</td><td><span class="k-rw">rewrite</span> keep the asides that matter, as sentences <span class="lvl">warn</span></td></tr>
+<tr><td>colon-spray</td><td>Three or more colons inside sentences in one paragraph</td><td class="ex">The fix: X. The cost: Y. The catch: Z.</td><td><span class="k-rw">rewrite</span> say it in plain sentences <span class="lvl">warn</span></td></tr>
+<tr><td>slash-pairs</td><td>Three or more word/word pairs in one paragraph</td><td class="ex">read/write, plan/execute, agent/human</td><td><span class="k-rw">rewrite</span> pick one word or write "and" <span class="lvl">warn</span></td></tr>
+<tr><td>arrow-prose</td><td>An arrow standing in for a verb in running prose</td><td class="ex">the draft → review → merge loop</td><td><span class="k-rw">rewrite</span> use the verb <span class="lvl">warn</span></td></tr>
 <tr><td>triplet-habit</td><td>More than two "X, Y and Z" lists in one paragraph</td><td class="ex">fast, reliable, and scalable … clear, concise, and actionable</td><td><span class="k-rw">rewrite</span> keep the items that are real <span class="lvl">warn</span></td></tr>
 </tbody>
 </table>
@@ -350,7 +356,7 @@ draft.md:5:51  error  em-dash           "trick — it's"
 <p><code>--json</code> prints the same findings as one JSON object for agents. <code>--rules a,b</code> and <code>--level error</code> narrow the run. Exit 0 when no error remains, 1 when one does, 2 on a usage error. Several files and folders are accepted; folders are scanned for <code>.md</code> and <code>.txt</code>.</p>
 
 <h3 id="fix">fix</h3>
-<p><code>slopstop fix draft.md</code> copies the file to <code>draft.orig.md</code>, applies auto fixes from the last match to the first so offsets stay valid, and prints a word diff of what changed. <code>--suggested</code> adds suggest fixes. <code>--dry-run</code> prints the diff without writing. After writing, it runs the gate against the copy with <code>--allow</code> set to the edited lines and fails loudly if its own edit escaped them, which would be a bug in a rule.</p>
+<p><code>slopstop fix draft.md</code> copies the file to <code>draft.orig.md</code>, applies auto fixes from the last match to the first so offsets stay valid, and prints a word diff of what changed. <code>--suggested</code> adds suggest fixes. <code>--dry-run</code> prints the diff without writing. Each edit replaces one matched span inside one line, so every other line stays byte for byte; a test asserts it for every rule's <code>fixes</code> examples.</p>
 
 <h3 id="calibrate">calibrate</h3>
 <p><code>slopstop calibrate FOLDER</code> runs every rule over a folder of prose the user considers good and prints, per rule, how many files it fired on and how often per 1000 words. With <code>--write slopstop.toml</code> it sets the density thresholds (long-paragraph, flat-rhythm, heading-spray, triplet-habit) so that each fires on at most a chosen share of those files, 5% by default. This replaces <code>profile</code> and registers.</p>
@@ -373,6 +379,26 @@ long-paragraph = 220</pre>
 </ul>
 <p>An <code>error</code> rule that fires on more than 5% of the reference posts is demoted to <code>warn</code> or narrowed until it does not. That rule addresses what went wrong in v0.1: a rule that fires on good writing teaches the agent to damage it.</p>
 <p>Each rule also gets a recall check on model output: the four uninstructed model corpora from experiment 001 and phase 0. These numbers are reported, not gated; a rule that never fires on model text is a candidate for deletion.</p>
+
+<h3 id="spike">What the spike found</h3>
+<p>A prototype of <code>check</code> and <code>fix</code> with the first catalog ran on 2026-11-17 over six sets of texts. Errors per 1000 words, and the share of files with at least one error:</p>
+<table class="tbl">
+<thead><tr><th>Set</th><th>Files</th><th>With an error</th><th>Errors per 1000 words</th></tr></thead>
+<tbody>
+<tr><td>Reference author, published 2023–26</td><td>146</td><td>91% (64% without em-dash)</td><td>4.95</td></tr>
+<tr><td>Models with no style prompt</td><td>60</td><td>97%</td><td>11.82</td></tr>
+<tr><td>Claude Code in print mode</td><td>36</td><td>42%</td><td>1.66</td></tr>
+<tr><td>Agent drafts in a working vault, English</td><td>203</td><td>100%</td><td>29.11</td></tr>
+<tr><td>Agent drafts in a working vault, Spanish</td><td>145</td><td>94%</td><td>15.16</td></tr>
+</tbody>
+</table>
+<ul>
+<li>The phrase rules (opener-filler, user-address, signposting, meta-commentary, hype) fire on the author's 2023–25 posts and almost never on current models: no model text without a style prompt produced an opener, a line to the user or a signpost. They stay, because they annoy whoever writes them, but model slop now lives elsewhere.</li>
+<li>Models differ in formatting and punctuation. Bold in running prose: 0 per 1000 words for the author, 6.1 for models, 9.7 in agent drafts. Em dashes: 4.1 and 18.9. Semicolons 0.9 and 7.5, long parenthetical asides 1.4 and 6.8, slash pairs 0.2 and 4.1, colons inside sentences 1.8 and 9.0. The last four became the new warnings.</li>
+<li>Auto and suggest fixes cover 81% to 100% of errors by count. On one post, about 9 of 12 em-dash suggestions read correctly; the misses were a dash before a list (a colon) and two unrelated dashes on one line treated as a pair.</li>
+<li>False positives found and fixed in the catalog: "not only X, but Y"; "in the end" opening an introduction; key-value records as label-bullets; "truly" and "incredibly", which the author used 184 times and models almost never.</li>
+<li>The agent-draft sets mix in chat exports, meeting transcripts and forensic reports, and no human Spanish set was found. PR 2 needs a clean set of agent prose and a Spanish reference.</li>
+</ul>
 
 <h2 id="skill"><span class="n">07</span>The skill</h2>
 <p><code>skills/slopstop/SKILL.md</code> shrinks to the loop in section 03 and three rules for the agent:</p>
@@ -457,7 +483,7 @@ long-paragraph = 220</pre>
     {id:'meta-commentary',lvl:'error',kind:'auto',why:'Announcing that a point matters delays the point.',re:ci("(?:it's worth noting that|it is important to note that|notably,) (\\w)"),rep:(m,c)=>c.toUpperCase()},
     {id:'bold-spray',lvl:'error',kind:'auto',why:'Bold inside running prose makes every phrase shout.',re:/\*\*([^*\n]+)\*\*/g,rep:(m,c)=>c},
     {id:'hedge-stack',lvl:'error',kind:'auto',why:'Two hedges where one would do.',re:ci("\\b(may|might|could) (?:potentially|possibly|perhaps)\\b"),rep:(m,c)=>c},
-    {id:'em-dash',lvl:'error',kind:'suggest',why:'An em dash joining two thoughts; a period is clearer.',re:/ — (\w)/g,rep:(m,c)=>'. '+c.toUpperCase()},
+    {id:'em-dash',lvl:'warn',kind:'suggest',why:'An em dash joining two thoughts; a period is clearer.',re:/ — (\w)/g,rep:(m,c)=>'. '+c.toUpperCase()},
     {id:'corrective',lvl:'error',kind:'rewrite',why:'Denying a reading nobody offered.',re:ci("\\b(?:isn't|is not|it's not) (?:just |only )?[^.,;—]{2,40}[,;—.] ?(?:it's|it is|but)\\b"),todo:'Say what it is, without the denial.'},
     {id:'rhetorical-qa',lvl:'error',kind:'rewrite',why:'A question the next words answer.',re:/[^.!?\n]*\?\s+(?:Simple|Easy|The answer)[^.!?\n]*[.!]/g,todo:'State the answer as a sentence.'},
     {id:'summary-closer',lvl:'error',kind:'suggest',why:'Restates the paragraph it closes.',re:ci("(?:^|(?<=\\n))in short,[^\\n.!?]*[.!?]\\s*"),rep:()=>''},
