@@ -1,113 +1,112 @@
 # slopstop
 
-slopstop is a research project and a toolkit for finding and fixing AI slop: the
-patterns that make AI-assisted prose tiring to read, harder to follow, and easy
-to dismiss.
+slopstop is a linter for prose. It finds the habits that make model-written
+text annoying to read, says where each one is and why it costs the reader
+something, and fixes it: by itself when the fix needs no judgment, or with a
+precise instruction for the agent when it does. An agent runs it in a loop over
+its own draft until nothing is left.
 
-The goal is better writing. A text that a model helped write should read as
-clearly and as specifically as the author would write it at their best.
-Hiding that a model was involved is a non-goal.
-
-## Disclose your AI use
-
-If you use AI to write something other people will read, say so. slopstop
-exists to make AI-assisted writing better, and it will never help anyone pass
-it off as unassisted. Nothing here is designed to defeat AI detectors, and we
-treat a lower detector score as a symptom to investigate, never as a target.
-
-Readers deserve to know how a text was made. The evidence also says that
-disclosure and prose quality are separate problems. In 16 preregistered
-experiments with 27,491 participants, readers rated the same text lower once
-they were told AI had helped write it, and better prose did not remove that
-penalty ([Raj, Berg and Seamans, 2026](https://doi.org/10.1037/xge0001889)).
-Our answer to that finding is writing good enough to be worth reading anyway,
-plus an honest account of who did what.
-
-Every AI-assisted text that slopstop helps produce carries a disclosure that
-says which steps a model performed and which were the author's. Some writing
-needs no such clause, such as code comments, READMEs and software
-documentation. Published work does: articles, books, papers and talks.
-
-## What the project does
-
-slopstop has two parts.
-
-1. **A mechanical tool**, the `slopstop` command. It encodes the rules for
-   finding AI slop and the human baselines they are measured against. It
-   checks texts, and it tells an agent what to fix and how the fix will be
-   checked. It calls no model.
-   - `profile` counts a register from a folder of human-written texts. A new
-     register, such as formal academic prose or one author's blog, is a folder
-     of examples, with no model training involved.
-   - `detect` reports the spans a reader would flag. Each finding carries the
-     register's measured rate, an instruction, and the check that verifies the
-     fix, and is marked required or optional.
-   - `gate` checks a model's output against its input: duplicated blocks,
-     unclosed code fences, truncation, lines addressed to the user, length, and
-     whether a fix touched only what it was allowed to.
-   - `mask` and `unmask` keep code blocks away from rewriting models.
-   - `instruct` prints a task for the agent (split a dictation, rewrite it,
-     judge a rewrite's fidelity, critique a text, polish a draft), and
-     `check-quotes` verifies the quotes the agent returns.
-   - `blind` builds anonymized packets for blind reads and records the
-     ranking.
-2. **Skills** for agents such as Claude Code, OpenCode or aegis, in
-   [skills/](skills/). They classify the text, choose a rewriting model that
-   applies no watermark, run the workflow, loop detect-and-fix until no
-   required finding is left, and write the disclosure.
-
-The research reports, the experiments and their numbers live here too, so every
-rule can point to the measurement behind it. The findings are in
-[docs/research](docs/research/), starting with the
-[synthesis](docs/research/2026-10-01-synthesis.md), and the experiments are in
-[experiments](experiments/).
+It flags a habit because of what the habit does to a reader, whoever wrote it.
+Whether a text "reads as AI" is not the question.
 
 ## Use it
 
 ```bash
 uv tool install git+https://github.com/gia-uh/slopstop
-slopstop profile path/to/your/posts --name my-blog     # writes registers/my-blog.json
-slopstop detect draft.md --register my-blog             # findings, instructions, checks
+
+slopstop check draft.md          # findings; exit 1 while an error remains
+slopstop fix draft.md            # apply the mechanical fixes, keep draft.orig.md
+slopstop fix --suggested draft.md
+slopstop rules                   # the catalog; `slopstop rules corrective` for one rule
 ```
 
-Version 0.1 ships one register, `apiad-blog-en`, counted on one author's 147
-published posts; [its README](src/slopstop/registers/README.md) records how
-often it flags that author's own held-out posts. To let an agent drive the
-tool, copy `skills/slopstop/` into `.claude/skills/` and the clause in
+A finding looks like this:
+
+```text
+draft.md:5:9  error  corrective       "isn't just a performance trick, it's"
+  why: Denying a reading nobody offered makes the reader process two claims to get one.
+  fix: rewrite: Say what it is, without the denial.
+  check: slopstop gate draft.orig.md draft.md --allow span --lines 5
+```
+
+Each rule fixes in one of three ways:
+
+- `auto`: an edit that cannot change the meaning, such as deleting "I hope
+  this helps!", removing bold from running prose, or turning "may potentially"
+  into "may". `fix` applies these.
+- `suggest`: a replacement that is right most of the time, such as an em dash
+  turned into a period. `fix --suggested` applies these.
+- `rewrite`: a habit that needs judgment, such as a corrective ("it isn't X,
+  it's Y") or a question the next sentence answers. The finding says what to
+  do, and `gate` checks that the edit stayed on the lines it names.
+
+The catalog has rules in English and Spanish for filler openings, lines
+addressed to the reader of a chat, announcements, hype, correctives, recaps,
+stacked hedges, em dashes, bold, emoji, label-bullet lists, heading spray,
+semicolon and colon chains, and sentence rhythm. [docs/rules.md](docs/rules.md)
+lists every rule with how often it fires on human and agent writing.
+
+## For agents
+
+Copy [skills/slopstop/](skills/slopstop/) into `.claude/skills/` (or your
+agent's skills folder) and the clause in
 [skills/agent-clause.md](skills/agent-clause.md) into your CLAUDE.md or
-AGENTS.md.
+AGENTS.md. The skill runs the loop: check, fix, rewrite the named lines, gate,
+check again, until `check` exits 0.
 
-## What we have found so far
+## Configure it
 
-- Commercial "humanizers" make prose worse. The ones that slip past detectors
-  produce garbled text, and readers who use LLMs every day still catch their
-  output almost every time
+A `slopstop.toml` next to the text, or `[tool.slopstop]` in `pyproject.toml`,
+turns rules off, changes their level and sets thresholds:
+
+```toml
+disable = ["em-dash"]
+
+[levels]
+signposting = "warn"
+
+[thresholds]
+long-paragraph = 200
+```
+
+`<!-- slopstop: allow corrective -->` on its own line keeps one paragraph's
+habit on purpose; `<!-- slopstop: off -->` and `<!-- slopstop: on -->` skip a
+region. `slopstop calibrate <folder>` measures every rule on writing you
+consider good and `--write slopstop.toml` sets the thresholds from it.
+
+## Not for hiding
+
+Nothing here helps anyone pass AI-assisted text off as unassisted, and nothing
+is designed to defeat AI detectors. Removing a habit because it annoys readers
+is the point; looking human is not. If you publish writing a model helped with,
+say so.
+
+## What the research found
+
+The project started as research into why AI-assisted prose reads badly. The
+reports are in [docs/research](docs/research/), starting with the
+[synthesis](docs/research/2026-10-01-synthesis.md); they predate the linter and
+are kept as they were.
+
+- Commercial "humanizers" make prose worse
   ([humanizers](docs/research/2026-10-01-01-humanizers.md)).
-- People who use LLMs daily for writing detect AI text with 92.7% accuracy and
-  4% false alarms, while people who don't are at chance. The experts point to
-  model vocabulary, formulaic structure and vague, upbeat conclusions
+- Readers who use LLMs daily point to model vocabulary, formulaic structure and
+  vague, upbeat conclusions
   ([reader perception](docs/research/2026-10-01-03-human-perception.md)).
-- Editing a model's draft toward your own style still leaves it closer to the
-  model than to you, so the order of work matters
-  ([synthesis](docs/research/2026-10-01-synthesis.md)).
-- Models asked to make only grammar edits still raise adjective use by 40% to
-  87% and change the meaning of the text
-  ([drafting workflows](docs/research/2026-10-01-08-drafting-workflows.md)).
-- Forbid lists backfire. Handed a list of banned words, a weaker model used them
+- Forbid lists backfire: handed a list of banned words, a weaker model used them
   39 times as often
   ([style-prompt experiment](docs/research/2026-09-13-style-prompt-arms-experiment.md)).
-
-The reports link each claim to its primary source, and
-[the verification pass](docs/research/2026-10-01-06-verification.md) records
-which claims were checked and what it corrected.
+  slopstop checks the output instead of telling the model what not to write.
+- Current models no longer write the classic openers ("Let's dive in", "I hope
+  this helps"); their habits are formatting and punctuation, such as bold in
+  running prose, heading spray and em dashes ([docs/rules.md](docs/rules.md)).
 
 ## AI use in this repository
 
-Alex Piad set the project's goals, scope and constraints and makes its
-decisions. DeepSeek V4 Pro agents ran the literature research, and a separate
-agent checked the key claims against their primary sources. Claude (Opus 5.5)
-coordinated the research and wrote this README and the documentation, which
-Alex reviews. The experiments report their own numbers.
+The maintainer set the project's goals and scope and makes its decisions.
+DeepSeek V4 Pro agents ran the literature research, and a separate agent
+checked the key claims against their primary sources. Claude (Opus 5.5) wrote
+the linter, its tests and this documentation, which the maintainer reviews.
 
 ## License
 

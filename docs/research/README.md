@@ -16,3 +16,8 @@ quoting a number from them, check
 partly wrong there, and two reports carry a correction note at the top for
 them. Track 07 carries a later correction: Anthropic's support page lists every
 current Claude model as watermarked.
+
+These reports were written while slopstop measured how far a text was from a
+human register. Version 0.2 reframed it as a linter for annoying habits, with
+no register; the reports stay as written and explain why many of the rules
+exist.

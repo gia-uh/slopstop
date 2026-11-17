@@ -13,6 +13,6 @@ def test_skill_has_frontmatter():
 
 def test_every_command_in_the_skill_exists():
     subs = cli.build_parser()._subparsers._group_actions[0].choices
-    used = set(re.findall(r"slopstop ([a-z-]+)", SKILL.read_text()))
+    used = set(re.findall(r"(?:^|[`(]|\$ )slopstop ([a-z-]+)", SKILL.read_text(), re.M))
     assert used, "the skill names no commands"
     assert used <= set(subs), used - set(subs)

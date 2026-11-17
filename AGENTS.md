@@ -1,45 +1,38 @@
 # slopstop
 
-slopstop researches how to detect and fix AI slop, and it is the toolkit its
-authors use to do it: detect, flag, rewrite and disclose. It serves Alex Piad
-and the GIA-UH group first, as writers who publish AI-assisted English and
-Spanish prose, and anyone who wants AI-assisted writing that reads well and is
-honest about how it was made.
+slopstop is a linter for prose: it finds the habits that make model-written
+text annoying to read, explains each one, and fixes it, by itself when the fix
+is mechanical and with a precise instruction for an agent when it needs
+judgment. An agent runs it in a loop over a draft until no error is left. It
+serves writers and agents who produce English and Spanish prose that people
+read.
 
 This file changes when the goals change. Nothing in it should be made false by
-a commit that adds code, an experiment or a report.
+a commit that adds code, a rule or a measurement.
 
 ## The rules the project serves
 
-- **Better writing, never hiding.** No tool here optimizes against an AI
-  detector, removes provenance, or helps pass AI-assisted text off as
-  unassisted. A detector is an instrument for finding bad spans. A stealth
-  feature would contradict the README's promise and the research, which found
-  that evasion and quality pull in opposite directions.
-- **Disclosure travels with the text.** A workflow that produces published
-  prose records which steps a model performed and emits the disclosure from
-  that record, so the clause describes what actually happened.
-- **No watermarked tokens in published prose.** Final prose comes from the
-  author or from a model that applies no watermark. Every Claude model and
-  Gemini's consumer apps watermark their text, so they may outline, critique
-  and fact-check but never write a published sentence. Docs and code prose are
-  exempt from this rule.
-- **No training on one author's voice.** Voices drift across years and
-  registers. A register is adapted by profiling a folder of human-written
-  examples, which is counting and needs no gradient step.
-- **Every rule carries its measurement.** A check enters the detector with the
-  human baseline it was measured against and the experiment that justified it.
-  The September experiments showed that unmeasured rules flag the author's own
-  vocabulary and that forbid lists backfire.
+- **Annoyance, not provenance.** A rule exists because a habit costs the reader
+  something: time, the point, or trust. It flags the habit whoever wrote it.
+  No rule exists only to separate model text from human text.
+- **Never hiding.** No tool here optimizes against an AI detector, removes
+  provenance, or helps pass AI-assisted text off as unassisted.
+- **As mechanical as possible.** The tool calls no model. Every fix that can
+  be an exact edit is one (`auto`); the rest carry an instruction and a `gate`
+  check that bounds the edit to its lines.
+- **Every rule carries its examples and its measurement.** A rule ships with
+  examples that must fire, must stay quiet and, for a replacement, must fix to
+  an exact text; `make test` runs them. Its fire rate on human and agent sets
+  is recorded in `docs/rules.md`. Levels never follow fire rates: a project
+  lowers a level in its own config.
 
 ## What done means
 
-For a tool: it runs on a real text the way a writer would run it, its checks
-have been broken on purpose to confirm they fire, and its false-positive rate
-on human writing in the target register is measured and recorded.
+For a rule: its examples pass, it was broken on purpose once to confirm a test
+fails, and `make calibrate` has recorded its fire rates.
 
-For an experiment: its folder holds the code, the method, the numbers and the
-conclusion, and anyone can rerun it from the README given the same inputs.
+For a tool: it runs on real texts the way an agent runs it, and a sweep over
+real files shows its fixes leave code, quotes and links intact.
 
 ## Where everything lives
 
@@ -47,12 +40,12 @@ conclusion, and anyone can rerun it from the README given the same inputs.
 |---|---|
 | `AGENTS.md` | goals, rules, what done means |
 | `DESIGN.md` | architecture and the reason for each boundary (once the design is approved) |
-| `docs/research/` | literature reports and findings, dated, frozen once complete |
+| `docs/research/` | the research behind the project, frozen; it predates the linter |
+| `docs/rules.md`, `docs/calibration/` | the generated rules table and the counts it is built from |
 | `docs/superpowers/specs/`, `docs/superpowers/plans/` | design specs and implementation plans |
 | `experiments/NNN-<slug>/` | one experiment per folder: code, method, results |
-| `src/slopstop/` | the CLI: one module per command, `tells.py` holds the catalog |
-| `src/slopstop/registers/` | shipped registers (counts only) and their measured false-positive rates |
-| `src/slopstop/instructions/` | the task templates `slopstop instruct` fills |
+| `src/slopstop/` | the CLI: `check.py`, `fix.py`, `calibrate.py`, `gate.py`, `mask.py` |
+| `src/slopstop/rules/` | the catalog: phrase rules per language, marks, document shape |
 | `skills/` | agent skills and the agent-instructions clause, for users to copy |
 | `tests/` | pytest, one file per module, run by `make test` |
 | `know-how/` | one procedure per job, each opening with a `when:` line |
