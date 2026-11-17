@@ -91,7 +91,7 @@ add(Rule(
     "long-paragraph", "any", "warn", "rewrite",
     why="A very long paragraph hides where the argument turns.",
     todo="Break it where the argument moves on. Insert paragraph breaks only.",
-    scan=_long_paragraph, threshold=180,
+    scan=_long_paragraph, threshold=134, tune=(60, 600),
     fires=(" ".join(["The cache holds the value."] * 50),),
     quiet=("The cache holds the value. " * 5,),
 ))
@@ -116,8 +116,8 @@ add(Rule(
     "flat-rhythm", "any", "warn", "rewrite",
     why="Sentences of the same length, one after another, read as a drone.",
     todo="Join two of them or split one, so the lengths vary.",
-    scan=_flat_rhythm, threshold=8,
-    fires=(" ".join(f"The cache number {w} holds one value." for w in "one two three four five six seven eight".split()),),
+    scan=_flat_rhythm, threshold=9, tune=(4, 30),
+    fires=(" ".join(f"The cache number {w} holds one value." for w in "one two three four five six seven eight nine".split()),),
     quiet=("The cache holds a value. It is fast. When a write arrives, the entry is dropped and the next "
            "read goes to the database, which is slow. Then it is fast again.",),
 ))
@@ -158,9 +158,9 @@ add(Rule(
     "triplet-habit", "any", "warn", "rewrite",
     why="List after list of three items reads as rhythm, not content.",
     todo="Keep the items that are real; two or four are fine.",
-    scan=_triplets, threshold=2,
+    scan=_triplets, threshold=3, tune=(1, 12),
     fires=("It is fast, cheap, and safe. Teams want clear, concise, and actionable docs. "
-           "We need speed, focus, and care.",),
+           "We need speed, focus, and care. Users want red, green, and blue.",),
     quiet=("It is fast, cheap, and safe. Teams want docs.",),
 ))
 
@@ -221,7 +221,7 @@ add(Rule(
     "heading-spray", "any", "warn", "rewrite",
     why="Headings over sections of a few sentences break a short text into fragments.",
     todo="Merge the short sections and drop their headings.",
-    scan=_heading_spray, threshold=80,
+    scan=_heading_spray, threshold=80, tune=(20, 120), tune_up=True,
     fires=("## One\n\nShort text.\n\n## Two\n\nShort text.\n\n## Three\n\nShort text.",),
     quiet=("## One\n\n" + "Long text here. " * 30 + "\n\n## Two\n\n" + "Long text here. " * 30,),
 ))

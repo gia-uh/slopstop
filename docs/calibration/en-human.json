@@ -1,0 +1,209 @@
+{
+ "set": "en-human",
+ "files": 146,
+ "words": 285716,
+ "langs": [
+  "en"
+ ],
+ "share": 0.05,
+ "rules": {
+  "em-dash": {
+   "level": "warn",
+   "files": 117,
+   "share": 0.801,
+   "per_1000_words": 4.049
+  },
+  "bold-spray": {
+   "level": "error",
+   "files": 0,
+   "share": 0.0,
+   "per_1000_words": 0.0
+  },
+  "emoji": {
+   "level": "error",
+   "files": 0,
+   "share": 0.0,
+   "per_1000_words": 0.0
+  },
+  "arrow-prose": {
+   "level": "warn",
+   "files": 0,
+   "share": 0.0,
+   "per_1000_words": 0.0
+  },
+  "semicolon-spray": {
+   "level": "warn",
+   "files": 3,
+   "share": 0.021,
+   "per_1000_words": 0.01
+  },
+  "aside-spray": {
+   "level": "warn",
+   "files": 3,
+   "share": 0.021,
+   "per_1000_words": 0.01
+  },
+  "colon-spray": {
+   "level": "warn",
+   "files": 3,
+   "share": 0.021,
+   "per_1000_words": 0.028
+  },
+  "slash-pairs": {
+   "level": "warn",
+   "files": 1,
+   "share": 0.007,
+   "per_1000_words": 0.003
+  },
+  "opener-filler/en": {
+   "level": "error",
+   "files": 12,
+   "share": 0.082,
+   "per_1000_words": 0.042
+  },
+  "user-address/en": {
+   "level": "error",
+   "files": 9,
+   "share": 0.062,
+   "per_1000_words": 0.031
+  },
+  "meta-commentary/en": {
+   "level": "error",
+   "files": 1,
+   "share": 0.007,
+   "per_1000_words": 0.003
+  },
+  "signposting/en": {
+   "level": "error",
+   "files": 32,
+   "share": 0.219,
+   "per_1000_words": 0.136
+  },
+  "hype/en": {
+   "level": "error",
+   "files": 19,
+   "share": 0.13,
+   "per_1000_words": 0.108
+  },
+  "corrective/en": {
+   "level": "error",
+   "files": 25,
+   "share": 0.171,
+   "per_1000_words": 0.15
+  },
+  "rhetorical-qa/en": {
+   "level": "error",
+   "files": 1,
+   "share": 0.007,
+   "per_1000_words": 0.003
+  },
+  "colon-reveal/en": {
+   "level": "warn",
+   "files": 0,
+   "share": 0.0,
+   "per_1000_words": 0.0
+  },
+  "hedge-stack/en": {
+   "level": "error",
+   "files": 8,
+   "share": 0.055,
+   "per_1000_words": 0.038
+  },
+  "metaphor-noun/en": {
+   "level": "warn",
+   "files": 39,
+   "share": 0.267,
+   "per_1000_words": 0.238
+  },
+  "summary-closer": {
+   "level": "error",
+   "files": 15,
+   "share": 0.103,
+   "per_1000_words": 0.052
+  },
+  "upbeat-ending": {
+   "level": "error",
+   "files": 0,
+   "share": 0.0,
+   "per_1000_words": 0.0
+  },
+  "long-paragraph": {
+   "level": "warn",
+   "files": 7,
+   "share": 0.048,
+   "per_1000_words": 0.059
+  },
+  "flat-rhythm": {
+   "level": "warn",
+   "files": 5,
+   "share": 0.034,
+   "per_1000_words": 0.017
+  },
+  "repeated-opener": {
+   "level": "warn",
+   "files": 30,
+   "share": 0.205,
+   "per_1000_words": 0.199
+  },
+  "triplet-habit": {
+   "level": "warn",
+   "files": 2,
+   "share": 0.014,
+   "per_1000_words": 0.007
+  },
+  "label-bullets": {
+   "level": "warn",
+   "files": 0,
+   "share": 0.0,
+   "per_1000_words": 0.0
+  },
+  "heading-spray": {
+   "level": "warn",
+   "files": 0,
+   "share": 0.0,
+   "per_1000_words": 0.0
+  }
+ },
+ "thresholds": {
+  "semicolon-spray": {
+   "current": 3,
+   "suggested": 3,
+   "share_at_suggested": 0.021
+  },
+  "aside-spray": {
+   "current": 3,
+   "suggested": 3,
+   "share_at_suggested": 0.021
+  },
+  "colon-spray": {
+   "current": 3,
+   "suggested": 3,
+   "share_at_suggested": 0.021
+  },
+  "slash-pairs": {
+   "current": 2,
+   "suggested": 2,
+   "share_at_suggested": 0.007
+  },
+  "long-paragraph": {
+   "current": 134,
+   "suggested": 134,
+   "share_at_suggested": 0.048
+  },
+  "flat-rhythm": {
+   "current": 9,
+   "suggested": 9,
+   "share_at_suggested": 0.034
+  },
+  "triplet-habit": {
+   "current": 3,
+   "suggested": 3,
+   "share_at_suggested": 0.014
+  },
+  "heading-spray": {
+   "current": 80,
+   "suggested": 120,
+   "share_at_suggested": 0.0
+  }
+ }
+}
