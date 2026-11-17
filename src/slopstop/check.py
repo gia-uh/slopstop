@@ -10,9 +10,11 @@ from slopstop.rules import Doc, Finding, Line
 
 SKIP_LINE = re.compile(r"^\s*(?:\||<|!\[|:::|>)")
 MASK = [text.INLINE_CODE, re.compile(r"\]\([^)]*\)"), re.compile(r"https?://\S+"),
-        text.HTML_COMMENT, re.compile(r"\$[^$\n]+\$")]
+        text.HTML_COMMENT, re.compile(r"\$[^$\n]+\$"),
+        # a phrase in quotation marks is mentioned or said by someone, not used by the writer
+        re.compile("«[^»\n]{1,120}»")]
 ITEM = re.compile(r"^\s*(?:[-*+]|\d+\.)\s+")
-LABEL = re.compile(r"^\s*(?:[-*+]|\d+\.)\s+\*\*[^*]+\*\*\s*[:.—-]")
+LABEL = re.compile(r"^\s*(?:[-*+]|\d+\.)\s+\*\*[^*]+\*\*(?:\s|[:.—-]|$)")
 HEADING = re.compile(r"^#{1,6}\s")
 ALLOW = re.compile(r"<!--\s*slopstop:\s*(allow\s+([\w,\s-]+?)|off|on)\s*-->")
 
@@ -83,16 +85,35 @@ def _masked(ln: str) -> str:
     return ln
 
 
+def _mask_quotes(ln: str, inside: bool) -> tuple[str, bool]:
+    """Blank what sits inside double quotes, carrying an open quote to the next line."""
+    out = []
+    for ch in ln:
+        if ch == '"':
+            inside = not inside
+        elif ch == "“":
+            inside = True
+        elif ch == "”":
+            inside = False
+        else:
+            out.append("\0" if inside else ch)
+            continue
+        out.append("\0")
+    return "".join(out), inside
+
+
 def document(raw: str, lang: str = "auto") -> Doc:
     lines_raw = raw.split("\n")
     code, _ = text._scan(raw)
     fm = text.FRONTMATTER.match(raw)
     skip = fm.group(0).count("\n") if fm else 0
-    lines = []
+    lines, quoted = [], False
     for i, ln in enumerate(lines_raw):
         if i < skip or code[i] or not ln.strip() or SKIP_LINE.match(ln):
+            quoted = False      # a quote never runs past its paragraph
             continue
-        lines.append(Line(i + 1, ln, _masked(ln), bool(HEADING.match(ln)), bool(ITEM.match(ln)),
+        scan, quoted = _mask_quotes(_masked(ln), quoted)
+        lines.append(Line(i + 1, ln, scan, bool(HEADING.match(ln)), bool(ITEM.match(ln)),
                           bool(LABEL.match(ln))))
     if lang == "auto":
         lang = text.detect_lang(text.tokenize(text.strip_markdown(raw)))

@@ -159,3 +159,23 @@ def test_rewrite_findings_say_to_keep_the_original(tmp_path, capsys):
     f.write_text("Caching isn't a trick, it's a decision.\n")
     cli.main(["check", str(f)])
     assert f"cp {f} {tmp_path / 'a.orig.md'}" in capsys.readouterr().out
+
+
+def test_quoted_phrases_are_mentions():
+    raw = 'Fix turns "may potentially" into "may", and “I hope this helps!” goes.\n'
+    assert check.run(raw).findings == []
+
+
+def test_bold_lead_in_of_a_list_item_is_a_label():
+    raw = "- **Never hiding.** No tool here helps hide provenance.\n- **Annoyance** matters.\n"
+    assert check.run(raw).findings == []
+
+
+def test_paths_are_not_slash_pairs():
+    raw = "Copy skills/slopstop/ and src/rules into place, then read/write, plan/execute.\n"
+    assert check.run(raw, cfg=check.Config(thresholds={"slash-pairs": 1})).findings[0].note == "2 word/word pairs"
+
+
+def test_a_quote_may_wrap_across_lines():
+    raw = 'Fix deletes "I hope\nthis helps!", and turns "may potentially"\ninto "may".\n'
+    assert check.run(raw).findings == []

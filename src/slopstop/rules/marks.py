@@ -107,7 +107,7 @@ for rid, pat, what, why, todo, fire, quiet in [
      "Colon after colon turns prose into a list of reveals.",
      "Say it in plain sentences.",
      "The fix: invalidate. The cost: a miss. The catch: races.", "We fixed it: we invalidate on write."),
-    ("slash-pairs", re.compile(r"\b[^\W\d_]{2,}/[^\W\d_]{2,}\b"), "word/word pairs",
+    ("slash-pairs", re.compile(r"(?<![\w./])[^\W\d_]{2,}/[^\W\d_]{2,}(?![\w./])"), "word/word pairs",
      "Slash pairs leave the reader to decide whether the writer meant and, or, or both.",
      "Pick one word, or write \"and\" or \"or\".",
      "The read/write path, the plan/execute split and the agent/human loop.", "Reads and writes share a path."),
