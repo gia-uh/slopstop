@@ -112,5 +112,6 @@ for rid, pat, what, why, todo, fire, quiet in [
      "Pick one word, or write \"and\" or \"or\".",
      "The read/write path, the plan/execute split and the agent/human loop.", "Reads and writes share a path."),
 ]:
-    add(Rule(rid, "any", "warn", "rewrite", why=why, todo=todo, scan=_density(pat, what), threshold=3,
+    add(Rule(rid, "any", "warn", "rewrite", why=why, todo=todo, scan=_density(pat, what),
+             threshold=2 if rid == "slash-pairs" else 3, tune=(1, 20),
              fires=(fire,), quiet=(quiet,)))

@@ -74,3 +74,16 @@ add(Rule(
     fires=("El panorama de la IA cambia.",),
     quiet=("El plan tiene tres pasos.",),
 ))
+
+add(Rule(
+    "signposting", "es", "error", "rewrite",
+    why="A sentence that announces what the text will do, instead of doing it.",
+    todo="Delete the announcement or replace it with its content.",
+    pattern=re.compile(r"(?:^|(?<=[.!?]\s))(?:" + phrases(
+        "en este artículo exploraremos", "en este artículo, exploraremos", "en este artículo veremos",
+        "en esta sección exploraremos", "en esta sección veremos", "a continuación exploraremos",
+        "a continuación, exploraremos", "profundicemos en", "exploremos", "veamos más de cerca",
+        "echemos un vistazo") + r")[^.!?\n]*[.!?]", re.I),
+    fires=("En este artículo exploraremos cómo funciona la caché.", "Echemos un vistazo a los números."),
+    quiet=("El artículo explora poco.", "Vimos los números."),
+))
