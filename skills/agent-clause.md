@@ -2,8 +2,7 @@
 
 Copy into CLAUDE.md or AGENTS.md:
 
-> **Prose that people will read goes through slopstop.** Before writing or
-> rewriting any text that might be published (posts, books, papers, talks,
-> reviews), use the slopstop skill: classify the text, follow its workflow, and
-> end with its disclosure. Claude never writes the final sentences of authored
-> or generated prose; it may split, outline, critique and check.
+> **Prose that people will read goes through slopstop.** After you write or
+> rewrite a post, a doc, a README, a report or an email, run the slopstop skill
+> on it before you hand it over: `slopstop check`, `slopstop fix`, rewrite only
+> the lines it names, and repeat until `check` exits 0.

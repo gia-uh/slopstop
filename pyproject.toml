@@ -1,7 +1,7 @@
 [project]
 name = "slopstop"
-version = "0.1.0"
-description = "Mechanical detection of AI slop, with instructions for the agent that fixes it"
+version = "0.2.0"
+description = "A linter for the habits that make model-written prose annoying to read"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"

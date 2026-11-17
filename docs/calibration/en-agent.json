@@ -9,27 +9,27 @@
  "rules": {
   "em-dash": {
    "level": "warn",
-   "files": 99,
-   "share": 0.9,
-   "per_1000_words": 16.197
+   "files": 98,
+   "share": 0.891,
+   "per_1000_words": 16.13
   },
   "bold-spray": {
    "level": "error",
-   "files": 107,
-   "share": 0.973,
-   "per_1000_words": 14.982
+   "files": 98,
+   "share": 0.891,
+   "per_1000_words": 7.612
   },
   "emoji": {
    "level": "error",
-   "files": 11,
-   "share": 0.1,
-   "per_1000_words": 0.208
+   "files": 10,
+   "share": 0.091,
+   "per_1000_words": 0.168
   },
   "arrow-prose": {
    "level": "warn",
    "files": 75,
    "share": 0.682,
-   "per_1000_words": 2.457
+   "per_1000_words": 2.437
   },
   "semicolon-spray": {
    "level": "warn",
@@ -51,9 +51,9 @@
   },
   "slash-pairs": {
    "level": "warn",
-   "files": 18,
-   "share": 0.164,
-   "per_1000_words": 0.148
+   "files": 10,
+   "share": 0.091,
+   "per_1000_words": 0.074
   },
   "opener-filler/en": {
    "level": "error",
@@ -87,9 +87,9 @@
   },
   "corrective/en": {
    "level": "error",
-   "files": 1,
-   "share": 0.009,
-   "per_1000_words": 0.007
+   "files": 0,
+   "share": 0.0,
+   "per_1000_words": 0.0
   },
   "rhetorical-qa/en": {
    "level": "error",
@@ -111,9 +111,9 @@
   },
   "metaphor-noun/en": {
    "level": "warn",
-   "files": 19,
-   "share": 0.173,
-   "per_1000_words": 0.362
+   "files": 18,
+   "share": 0.164,
+   "per_1000_words": 0.342
   },
   "summary-closer": {
    "level": "error",
@@ -153,9 +153,9 @@
   },
   "label-bullets": {
    "level": "warn",
-   "files": 18,
-   "share": 0.164,
-   "per_1000_words": 0.168
+   "files": 40,
+   "share": 0.364,
+   "per_1000_words": 0.571
   },
   "heading-spray": {
    "level": "warn",
@@ -183,7 +183,7 @@
   "slash-pairs": {
    "current": 2,
    "suggested": 3,
-   "share_at_suggested": 0.045
+   "share_at_suggested": 0.018
   },
   "long-paragraph": {
    "current": 134,

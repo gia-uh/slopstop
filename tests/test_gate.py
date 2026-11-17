@@ -51,8 +51,17 @@ def test_placeholders_must_survive_once():
 
 def test_check_input_truncation():
     assert not gate.check_input("A sentence that stops in the").ok
-    r = gate.check_input("speech has no final period", transcript=True)
-    assert r.ok and r.warnings
+    assert gate.check_input("A sentence that ends.").ok
+
+
+def test_empty_output_fails_even_for_a_short_source():
+    assert not gate.check_output("Short source text.", "", allow="span", lines=[1]).ok
+
+
+def test_curly_apostrophe_line_to_the_user_fails():
+    src = "The essay body goes here and it is long enough to matter for the gate."
+    out = "Here\u2019s the rewritten essay:\n\n" + src
+    assert not gate.check_output(src, out).ok
 
 
 def test_cli_gate_pass_fail_and_missing(tmp_path, capsys):

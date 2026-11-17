@@ -11,7 +11,7 @@
    "level": "warn",
    "files": 117,
    "share": 0.801,
-   "per_1000_words": 4.049
+   "per_1000_words": 4.035
   },
   "bold-spray": {
    "level": "error",
@@ -51,9 +51,9 @@
   },
   "slash-pairs": {
    "level": "warn",
-   "files": 1,
-   "share": 0.007,
-   "per_1000_words": 0.003
+   "files": 0,
+   "share": 0.0,
+   "per_1000_words": 0.0
   },
   "opener-filler/en": {
    "level": "error",
@@ -147,9 +147,9 @@
   },
   "triplet-habit": {
    "level": "warn",
-   "files": 2,
-   "share": 0.014,
-   "per_1000_words": 0.007
+   "files": 1,
+   "share": 0.007,
+   "per_1000_words": 0.003
   },
   "label-bullets": {
    "level": "warn",
@@ -183,7 +183,7 @@
   "slash-pairs": {
    "current": 2,
    "suggested": 2,
-   "share_at_suggested": 0.007
+   "share_at_suggested": 0.0
   },
   "long-paragraph": {
    "current": 134,
@@ -198,7 +198,7 @@
   "triplet-habit": {
    "current": 3,
    "suggested": 3,
-   "share_at_suggested": 0.014
+   "share_at_suggested": 0.007
   },
   "heading-spray": {
    "current": 80,

@@ -12,13 +12,13 @@
    "level": "warn",
    "files": 12,
    "share": 0.214,
-   "per_1000_words": 7.672
+   "per_1000_words": 7.148
   },
   "bold-spray": {
    "level": "error",
    "files": 16,
    "share": 0.286,
-   "per_1000_words": 0.469
+   "per_1000_words": 0.221
   },
   "emoji": {
    "level": "error",
@@ -34,27 +34,27 @@
   },
   "semicolon-spray": {
    "level": "warn",
-   "files": 10,
-   "share": 0.179,
-   "per_1000_words": 0.331
+   "files": 7,
+   "share": 0.125,
+   "per_1000_words": 0.277
   },
   "aside-spray": {
    "level": "warn",
    "files": 4,
    "share": 0.071,
-   "per_1000_words": 0.15
+   "per_1000_words": 0.119
   },
   "colon-spray": {
    "level": "warn",
    "files": 3,
    "share": 0.054,
-   "per_1000_words": 0.058
+   "per_1000_words": 0.054
   },
   "slash-pairs": {
    "level": "warn",
-   "files": 4,
-   "share": 0.071,
-   "per_1000_words": 0.071
+   "files": 0,
+   "share": 0.0,
+   "per_1000_words": 0.0
   },
   "opener-filler/en": {
    "level": "error",
@@ -142,9 +142,9 @@
   },
   "hype/es": {
    "level": "error",
-   "files": 6,
-   "share": 0.107,
-   "per_1000_words": 0.06
+   "files": 5,
+   "share": 0.089,
+   "per_1000_words": 0.048
   },
   "metaphor-noun/es": {
    "level": "warn",
@@ -190,9 +190,9 @@
   },
   "triplet-habit": {
    "level": "warn",
-   "files": 7,
-   "share": 0.125,
-   "per_1000_words": 0.058
+   "files": 6,
+   "share": 0.107,
+   "per_1000_words": 0.038
   },
   "label-bullets": {
    "level": "warn",
@@ -210,7 +210,7 @@
  "thresholds": {
   "semicolon-spray": {
    "current": 3,
-   "suggested": 8,
+   "suggested": 6,
    "share_at_suggested": 0.036
   },
   "aside-spray": {
@@ -220,13 +220,13 @@
   },
   "colon-spray": {
    "current": 3,
-   "suggested": 5,
+   "suggested": 4,
    "share_at_suggested": 0.036
   },
   "slash-pairs": {
    "current": 2,
-   "suggested": 4,
-   "share_at_suggested": 0.036
+   "suggested": 2,
+   "share_at_suggested": 0.0
   },
   "long-paragraph": {
    "current": 134,
@@ -240,7 +240,7 @@
   },
   "triplet-habit": {
    "current": 3,
-   "suggested": 7,
+   "suggested": 6,
    "share_at_suggested": 0.036
   },
   "heading-spray": {
