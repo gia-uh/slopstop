@@ -58,20 +58,19 @@ def repeated_run(s: str, n: int = REPEAT_RUN) -> str | None:
     return None
 
 
-def check_input(raw: str, transcript: bool = False) -> Result:
+def check_input(raw: str) -> Result:
     r = Result()
-    problems = []
     if not text.fences_balanced(raw):
-        problems.append("unbalanced code fence: the text ends inside a code block")
+        r.failures.append("unbalanced code fence: the text ends inside a code block")
     if ends_mid_sentence(raw):
-        problems.append(f"ends mid-sentence: '...{raw.rstrip()[-50:]}'")
-    (r.warnings if transcript else r.failures).extend(problems)
+        r.failures.append(f"ends mid-sentence: '...{raw.rstrip()[-50:]}'")
     return r
 
 
 def _structure(src: str, out: str, r: Result) -> None:
-    if len(_words(out)) < 30 and len(_words(src)) >= 30:
-        r.failures.append(f"empty or near-empty output ({len(_words(out))} words)")
+    n_out, n_src = len(_words(out)), len(_words(src))
+    if (n_src >= 30 and n_out < 30) or (n_src and not n_out):
+        r.failures.append(f"empty or near-empty output ({n_out} words)")
         return
     if not text.fences_balanced(out) and text.fences_balanced(src):
         r.failures.append("unbalanced code fence")
@@ -80,7 +79,7 @@ def _structure(src: str, out: str, r: Result) -> None:
         r.failures.append(f"repeated block: '{run[:60]}...'")
     lines = [ln for ln in out.strip().splitlines() if ln.strip()]
     for ln in lines[:1] + lines[-1:]:
-        if META.search(ln) and ln.strip()[:40].lower() not in src.lower():
+        if META.search(text.normalize(ln)) and text.normalize(ln.strip()[:40]).lower() not in text.normalize(src).lower():
             r.failures.append(f"line addressed to the user: '{ln.strip()[:60]}'")
     if ends_mid_sentence(out) and not ends_mid_sentence(src):
         r.failures.append(f"ends mid-sentence: '...{out.rstrip()[-50:]}'")
@@ -119,18 +118,13 @@ def _span_failures(src: str, out: str, allowed: set[int]) -> list[str]:
 
 
 def check_output(src: str, out: str, allow: str = "rewrite", ratio: tuple[float, float] = (0.75, 1.35),
-                 lines: list[int] | None = None, budget: float = 0.15,
-                 split: list[dict] | None = None) -> Result:
+                 lines: list[int] | None = None, budget: float = 0.15) -> Result:
     r = Result()
     _structure(src, out, r)
-    for s in split or []:
-        if s["kind"] == "request" and len(text.tokenize(s["text"])) >= 6 and overlap(s["text"], out) >= 0.3:
-            r.failures.append(f"a request reached the output: '{s['text'][:60]}'")
     if r.failures and "empty" in r.failures[0]:
         return r
     if allow == "rewrite":
-        base = src if split is None else " ".join(s["text"] for s in split if s["kind"] != "request")
-        got = len(_words(out)) / max(len(_words(base)), 1)
+        got = len(_words(out)) / max(len(_words(src)), 1)
         lo, hi = ratio
         if not lo <= got <= hi:
             r.failures.append(f"length ratio {got:.2f} outside [{lo}, {hi}]")
@@ -144,46 +138,4 @@ def check_output(src: str, out: str, allow: str = "rewrite", ratio: tuple[float,
         changed = 1 - difflib.SequenceMatcher(a=_all_tokens(src), b=_all_tokens(out), autojunk=False).ratio()
         if changed > budget:
             r.failures.append(f"--allow polish: {changed:.0%} of words changed, over the {budget:.0%} budget")
-    return r
-
-
-KINDS = {"content", "directive", "request"}
-
-
-def overlap(span: str, hay: str, n: int = 8) -> float:
-    """Share of the span's n-word windows found verbatim in hay."""
-    s, h = text.tokenize(span), " ".join(text.tokenize(hay))
-    if not s:
-        return 1.0
-    if len(s) < n:
-        return 1.0 if " ".join(s) in h else 0.0
-    wins = [" ".join(s[i:i + n]) for i in range(len(s) - n + 1)]
-    return sum(w in h for w in wins) / len(wins)
-
-
-def check_split(transcript: str, segments: list[dict]) -> Result:
-    """Each passage must continue the transcript exactly where the previous one ended.
-
-    One cursor over the transcript's words checks verbatim copying, full coverage
-    and order at once; punctuation and case may differ, words may not.
-    """
-    r = Result()
-    words = _all_tokens(transcript)
-    cursor = 0
-    for i, s in enumerate(segments, 1):
-        if s.get("kind") not in KINDS:
-            r.failures.append(f"passage {i} has kind {s.get('kind')!r}; expected one of {sorted(KINDS)}")
-        p = _all_tokens(str(s.get("text", "")))
-        if not p:
-            r.failures.append(f"passage {i} is empty")
-            continue
-        if words[cursor:cursor + len(p)] != p:
-            got = " ".join(words[cursor:cursor + 8])
-            r.failures.append(f"passage {i} does not continue the transcript verbatim (text edited, "
-                              f"missing or out of order): expected '{got}...', got '{' '.join(p[:8])}...'")
-            return r
-        cursor += len(p)
-    if cursor < len(words):
-        r.failures.append(f"coverage: the passages stop at word {cursor} of {len(words)}; "
-                          f"missing '{' '.join(words[cursor:cursor + 8])}...'")
     return r
