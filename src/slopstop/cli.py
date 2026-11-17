@@ -203,8 +203,32 @@ def cmd_fix(args) -> int:
     return 0
 
 
+def cmd_calibrate(args) -> int:
+    from slopstop import calibrate
+    folder = Path(args.folder)
+    if not folder.is_dir():
+        raise UsageError(f"no such folder: {args.folder}")
+    res = calibrate.measure(calibrate.files_in(folder), args.name or folder.name, args.share)
+    if not res["files"]:
+        raise UsageError(f"no file of {calibrate.MIN_WORDS} words or more in {args.folder}")
+    if args.out:
+        Path(args.out).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.out).write_text(json.dumps(res, indent=1) + "\n")
+    print(json.dumps(res, indent=1) if args.json else calibrate.render_text(res), end="\n" if args.json else "")
+    if args.write:
+        got = {k: v["suggested"] for k, v in res["thresholds"].items() if v["suggested"] is not None}
+        calibrate.write_config(Path(args.write), got)
+        print(f"{args.write}: {len(got)} thresholds written", file=sys.stderr)
+    return 0
+
+
 def cmd_rules(args) -> int:
     from slopstop import rules
+    if args.markdown:
+        from slopstop import calibrate
+        cals = [json.loads(read(p)) for p in args.calibration]
+        print(calibrate.rules_markdown(cals), end="")
+        return 0
     cat = rules.load()
     pick = [r for r in cat if not args.id or r.id == args.id]
     if not pick:
@@ -245,8 +269,19 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--config")
     s.set_defaults(func=cmd_fix)
 
+    s = sub.add_parser("calibrate", help="how often each rule fires on a folder of good prose, and thresholds that fit")
+    s.add_argument("folder")
+    s.add_argument("--name", help="the set's name in the output (default: the folder's name)")
+    s.add_argument("--share", type=float, default=0.05, help="share of files a tuned threshold may flag")
+    s.add_argument("--json", action="store_true")
+    s.add_argument("--out", help="also write the JSON result to this file")
+    s.add_argument("--write", help="merge the suggested thresholds into this slopstop.toml")
+    s.set_defaults(func=cmd_calibrate)
+
     s = sub.add_parser("rules", help="list the rules, or show one with its examples")
     s.add_argument("id", nargs="?")
+    s.add_argument("--markdown", action="store_true", help="the rules table, with calibration columns")
+    s.add_argument("--calibration", nargs="*", default=[], help="calibration JSON files for --markdown")
     s.set_defaults(func=cmd_rules)
 
     s = sub.add_parser("profile", help="count a register from a folder of human-written texts")

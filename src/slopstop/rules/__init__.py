@@ -48,13 +48,19 @@ class Doc:
     paragraphs: list[text.Paragraph]
     sentences: list[text.Sentence]
 
+    def __post_init__(self):
+        self._by_n = {ln.n: ln for ln in self.lines}
+        self._para: dict[int, str] = {}
+
     def line(self, n: int) -> Line | None:
-        return next((ln for ln in self.lines if ln.n == n), None)
+        return self._by_n.get(n)
 
     def para_scan(self, p: text.Paragraph) -> str:
         """A prose paragraph's masked text, its lines joined by spaces."""
-        span = range(p.line, p.line + p.text.count("\n") + 1)
-        return " ".join(ln.scan for ln in self.lines if ln.n in span)
+        if p.line not in self._para:
+            span = range(p.line, p.line + p.text.count("\n") + 1)
+            self._para[p.line] = " ".join(self._by_n[n].scan for n in span if n in self._by_n)
+        return self._para[p.line]
 
 
 @dataclass(frozen=True)
@@ -69,6 +75,8 @@ class Rule:
     replace: Callable[[re.Match, Line], str | None] | str | None = None
     scan: Callable[["Doc", "Rule", int | None], list[Finding]] | None = None
     threshold: int | None = None
+    tune: tuple[int, int] | None = None   # candidate thresholds for calibrate, inclusive
+    tune_up: bool = False                 # True when a higher threshold flags more, not less
     skip: Callable[[Line], bool] | None = None
     fires: tuple[str, ...] = ()
     quiet: tuple[str, ...] = ()
