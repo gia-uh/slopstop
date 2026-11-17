@@ -212,6 +212,7 @@ mark.gone{background:rgba(157,176,126,.22);color:var(--ok);text-decoration:line-
 <tr><td>Registers</td><td>Gone. <code>calibrate</code> measures fire rates on a folder of good prose instead</td><td class="why"><span class="who q">proposed</span> A percentile band per author is what made v0.1 a deviation detector. A fire rate on good prose is the precision number a rule needs.</td></tr>
 <tr><td>Languages</td><td>English and Spanish in v0.2, chosen per file by the existing detector, or <code>--lang</code></td><td class="why"><span class="who q">proposed</span> The project's writers publish in both. Each rule declares its language; structural rules apply to both.</td></tr>
 <tr><td>Em dashes</td><td>Every em dash in prose is a <code>warn</code> finding with a suggested period, comma or colon. A config sets it to <code>error</code> for agent-written text</td><td class="why"><span class="who">maintainer</span> The spike found em dashes in 117 of the reference author's 146 posts. As an error, the rule alone would fail 27% more of them, and the loop would rewrite every dash in the author's prose.</td></tr>
+<tr><td>Levels and fire rates</td><td>Phrase rules stay errors even though signposting, corrective, hype and summary-closer fire on 10% to 22% of the reference author's posts. Fire rates are reported, not used to demote</td><td class="why"><span class="who">maintainer</span> They are real habits an editor would cut, whoever wrote them. A project that wants otherwise says so in its config.</td></tr>
 <tr><td>Spike revisions</td><td>Drop empty-intensifier; narrow corrective, summary-closer and label-bullets; add five punctuation-density warnings</td><td class="why"><span class="who">maintainer</span> Section 06 lists the evidence for each change.</td></tr>
 </tbody>
 </table>
@@ -359,7 +360,7 @@ draft.md:5:51  error  em-dash           "trick — it's"
 <p><code>slopstop fix draft.md</code> copies the file to <code>draft.orig.md</code>, applies auto fixes from the last match to the first so offsets stay valid, and prints a word diff of what changed. <code>--suggested</code> adds suggest fixes. <code>--dry-run</code> prints the diff without writing. Each edit replaces one matched span inside one line, so every other line stays byte for byte; a test asserts it for every rule's <code>fixes</code> examples.</p>
 
 <h3 id="calibrate">calibrate</h3>
-<p><code>slopstop calibrate FOLDER</code> runs every rule over a folder of prose the user considers good and prints, per rule, how many files it fired on and how often per 1000 words. With <code>--write slopstop.toml</code> it sets the density thresholds (long-paragraph, flat-rhythm, heading-spray, triplet-habit) so that each fires on at most a chosen share of those files, 5% by default. This replaces <code>profile</code> and registers.</p>
+<p><code>slopstop calibrate FOLDER</code> runs every rule over a folder of prose the user considers good and prints, per rule, how many files it fired on and how often per 1000 words. With <code>--write slopstop.toml</code> it sets the density thresholds (long-paragraph, flat-rhythm, heading-spray, triplet-habit and the punctuation warnings) so that each fires on at most a chosen share of those files, 5% by default. It never changes a level. This replaces <code>profile</code> and registers.</p>
 
 <h3 id="config">Config and suppression</h3>
 <pre><span class="c"># slopstop.toml, or [tool.slopstop] in pyproject.toml, found upward from the file</span>
@@ -377,7 +378,7 @@ long-paragraph = 220</pre>
 <li>Its examples, run by <code>make test</code>: what must fire, what must stay quiet, and what <code>fix</code> must produce.</li>
 <li>Its fire rate on good human prose, recorded in <code>docs/rules.md</code>, a table that <code>make rules-doc</code> generates from the catalog and the last calibration run. The reference corpus is the maintainer's 147 published English posts (private, as today) plus a public Spanish set to choose during the build.</li>
 </ul>
-<p>An <code>error</code> rule that fires on more than 5% of the reference posts is demoted to <code>warn</code> or narrowed until it does not. That rule addresses what went wrong in v0.1: a rule that fires on good writing teaches the agent to damage it.</p>
+<p>A rule's level does not follow its fire rate on human prose. A habit that annoys readers stays an <code>error</code> even when a good writer has it; the fire rate is recorded so a project knows what it is turning on, and the project's config lowers a level or disables a rule. A rule is narrowed only when it fires on text that does not have the habit, which is a bug in its pattern.</p>
 <p>Each rule also gets a recall check on model output: the four uninstructed model corpora from experiment 001 and phase 0. These numbers are reported, not gated; a rule that never fires on model text is a candidate for deletion.</p>
 
 <h3 id="spike">What the spike found</h3>
