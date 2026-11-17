@@ -146,10 +146,108 @@ def cmd_blind_record(args) -> int:
     return 0
 
 
+def _files(paths: list[str]) -> list[Path]:
+    out = []
+    for p in map(Path, paths):
+        if p.is_dir():
+            out += sorted(x for x in p.rglob("*") if x.suffix in (".md", ".txt") and ".orig." not in x.name)
+        elif p.is_file():
+            out.append(p)
+        else:
+            raise UsageError(f"no such file: {p}")
+    return out
+
+
+def _config(path: Path, explicit: str | None):
+    from slopstop import check
+    try:
+        return check.load_config(path.parent.resolve(), explicit)
+    except (ValueError, OSError) as e:
+        raise UsageError(str(e)) from e
+
+
+def cmd_check(args) -> int:
+    from slopstop import check
+    only = set(args.rules.split(",")) if args.rules else None
+    reps = []
+    for f in _files(args.paths):
+        cfg = _config(f, args.config)
+        rep = check.run(read(str(f)), str(f), cfg, args.lang, only)
+        if args.level == "error":
+            rep.findings = [x for x in rep.findings if x.level == "error"]
+        reps.append(rep)
+    print(check.to_json(reps) if args.json else check.render_text(reps), end="\n" if args.json else "")
+    return 1 if any(r.errors for r in reps) else 0
+
+
+def cmd_fix(args) -> int:
+    import difflib
+    from slopstop import check, fix
+    kinds = ("auto", "suggest") if args.suggested else ("auto",)
+    total = 0
+    for f in _files(args.paths):
+        raw = read(str(f))
+        new, applied = fix.apply(raw, kinds, _config(f, args.config), args.lang)
+        total += len(applied)
+        if args.dry_run:
+            sys.stdout.writelines(difflib.unified_diff(raw.splitlines(True), new.splitlines(True),
+                                                       str(f), str(f) + " (fixed)"))
+            continue
+        if applied:
+            Path(check.orig_path(str(f))).write_text(raw, encoding="utf-8")
+            f.write_text(new, encoding="utf-8")
+        for a in applied:
+            print(f"{f}:{a.line}:{a.start + 1}  {a.rule:<16} {json.dumps(a.text.strip()[:60], ensure_ascii=False)}"
+                  f" -> {json.dumps(a.replacement, ensure_ascii=False) if a.replacement else 'deleted'}")
+    print(f"{total} edits" + (" (dry run)" if args.dry_run else ""), file=sys.stderr)
+    return 0
+
+
+def cmd_rules(args) -> int:
+    from slopstop import rules
+    cat = rules.load()
+    pick = [r for r in cat if not args.id or r.id == args.id]
+    if not pick:
+        raise UsageError(f"no rule {args.id}; run 'slopstop rules' for the list")
+    for r in pick:
+        if args.id:
+            print(f"{r.id} ({r.lang}, {r.level}, {r.kind}{f', threshold {r.threshold}' if r.threshold else ''})")
+            print(f"  why: {r.why}\n  fix: {r.todo}")
+            for x in r.fires:
+                print(f"  fires: {x[:100]}")
+            for x in r.quiet:
+                print(f"  quiet: {x[:100]}")
+        else:
+            print(f"{r.id:<17} {r.lang:<4} {r.level:<6} {r.kind:<8} {r.why}")
+    print(f"{len(pick)} rules")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="slopstop", description="Mechanical AI-slop detection with instructions for the agent that fixes it.")
     p.add_argument("--version", action="version", version=f"slopstop {__version__}")
     sub = p.add_subparsers(dest="command")
+
+    s = sub.add_parser("check", help="findings, reasons and fixes for texts; exit 1 while errors remain")
+    s.add_argument("paths", nargs="+", help="files or folders (.md, .txt)")
+    s.add_argument("--json", action="store_true")
+    s.add_argument("--lang", choices=["en", "es"])
+    s.add_argument("--rules", help="comma-separated rule ids to run")
+    s.add_argument("--level", choices=["error", "warn"], default="warn", help="error: report errors only")
+    s.add_argument("--config", help="a slopstop.toml to use instead of searching upward")
+    s.set_defaults(func=cmd_check)
+
+    s = sub.add_parser("fix", help="apply the mechanical fixes in place, keeping FILE.orig")
+    s.add_argument("paths", nargs="+")
+    s.add_argument("--suggested", action="store_true", help="also apply suggested replacements")
+    s.add_argument("--dry-run", action="store_true", help="print a diff instead of writing")
+    s.add_argument("--lang", choices=["en", "es"])
+    s.add_argument("--config")
+    s.set_defaults(func=cmd_fix)
+
+    s = sub.add_parser("rules", help="list the rules, or show one with its examples")
+    s.add_argument("id", nargs="?")
+    s.set_defaults(func=cmd_rules)
 
     s = sub.add_parser("profile", help="count a register from a folder of human-written texts")
     s.add_argument("folder")
